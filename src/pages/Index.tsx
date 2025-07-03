@@ -3,7 +3,26 @@ import { Header } from '@/components/Layout/Header';
 import { Sidebar } from '@/components/Layout/Sidebar';
 import { Dashboard } from '@/components/Dashboard/Dashboard';
 import { CreateWorldModal } from '@/components/Modal/CreateWorldModal';
+import { Characters } from '@/components/Characters/Characters';
+import { CharacterView } from '@/components/Characters/CharacterView';
 import { useWorldsData } from '@/hooks/useLocalStorage';
+
+interface Character {
+  id: string;
+  worldId: string;
+  image?: string;
+  name: string;
+  birthDate: string;
+  birthPlace: string;
+  race: string;
+  ethnicity: string;
+  status: string;
+  relatives: string;
+  characterClass: string;
+  description: string;
+  createdAt: string;
+  lastModified: string;
+}
 
 const Index = () => {
   const {
@@ -18,6 +37,8 @@ const Index = () => {
   const [isCreateWorldModalOpen, setIsCreateWorldModalOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewingCharacter, setViewingCharacter] = useState<Character | null>(null);
+  const [characters, setCharacters] = useState<Character[]>([]);
 
   const handleCreateWorld = () => {
     setIsCreateWorldModalOpen(true);
@@ -48,6 +69,32 @@ const Index = () => {
 
   const handleHomeClick = () => {
     setActiveSection('dashboard');
+    setViewingCharacter(null);
+  };
+
+  const handleViewCharacter = (character: Character) => {
+    setViewingCharacter(character);
+  };
+
+  const handleBackFromCharacter = () => {
+    setViewingCharacter(null);
+  };
+
+  const handleSaveCharacter = (character: Character) => {
+    // Оновити персонажа в localStorage через хук
+    const updatedCharacter = {
+      ...character,
+      lastModified: new Date().toISOString()
+    };
+    setCharacters(prev => 
+      prev.map(char => 
+        char.id === character.id ? updatedCharacter : char
+      )
+    );
+  };
+
+  const handleDeleteCharacterFromView = (characterId: string) => {
+    setCharacters(prev => prev.filter(char => char.id !== characterId));
   };
 
   const currentWorld = getCurrentWorld();
@@ -99,19 +146,20 @@ const Index = () => {
           )}
 
           {activeSection === 'characters' && showSidebar && (
-            <div style={{ padding: '2rem' }}>
-              <h1 style={{ 
-                fontSize: '2rem', 
-                fontWeight: '700', 
-                marginBottom: '1rem',
-                color: 'var(--text-primary)'
-              }}>
-                Персонажі
-              </h1>
-              <p style={{ color: 'var(--text-secondary)' }}>
-                Розділ персонажів буде реалізовано в наступному кроці...
-              </p>
-            </div>
+            viewingCharacter ? (
+              <CharacterView
+                character={viewingCharacter}
+                onBack={handleBackFromCharacter}
+                onEdit={(char) => setViewingCharacter(char)}
+                onDelete={handleDeleteCharacterFromView}
+                onSave={handleSaveCharacter}
+              />
+            ) : (
+              <Characters
+                currentWorldId={currentWorldId}
+                onViewCharacter={handleViewCharacter}
+              />
+            )
           )}
 
           {activeSection === 'lore' && showSidebar && (
