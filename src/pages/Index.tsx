@@ -5,6 +5,7 @@ import { Dashboard } from '@/components/Dashboard/Dashboard';
 import { CreateWorldModal } from '@/components/Modal/CreateWorldModal';
 import { Characters } from '@/components/Characters/Characters';
 import { CharacterView } from '@/components/Characters/CharacterView';
+import { Lore } from '@/components/Lore/Lore';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 
 interface Character {
@@ -163,19 +164,7 @@ const Index = () => {
           )}
 
           {activeSection === 'lore' && showSidebar && (
-            <div style={{ padding: '2rem' }}>
-              <h1 style={{ 
-                fontSize: '2rem', 
-                fontWeight: '700', 
-                marginBottom: '1rem',
-                color: 'var(--text-primary)'
-              }}>
-                Лор
-              </h1>
-              <p style={{ color: 'var(--text-secondary)' }}>
-                Розділ лору буде реалізовано в наступному кроці...
-              </p>
-            </div>
+            <Lore currentWorldId={currentWorldId} />
           )}
 
           {/* Інші розділи будуть додані пізніше */}
