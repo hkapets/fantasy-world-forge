@@ -19,6 +19,13 @@
   --text-secondary: #CBD5E1; /* Вторинний сірий */
   --text-muted: #94A3B8; /* Приглушений */
   
+  /* Стани */
+  --success: #10B981; /* Зелений успіх */
+  --warning: #F59E0B; /* Помаранчевий попередження */
+  --danger: #EF4444; /* Червона небезпека */
+  --accent: var(--fantasy-accent); /* Акцентний колір */
+  --muted: var(--text-muted); /* Приглушений */
+  
   /* Бордери */
   --border-primary: #374151;
   --border-secondary: #4B5563;
@@ -141,6 +148,30 @@ body {
 
 .btn-danger:hover {
   background: #B91C1C;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-icon:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.btn-icon-sm {
+  width: 28px;
+  height: 28px;
 }
 
 .input {
