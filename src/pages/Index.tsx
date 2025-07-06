@@ -6,6 +6,7 @@ import { CreateWorldModal } from '@/components/Modal/CreateWorldModal';
 import { Characters } from '@/components/Characters/Characters';
 import { CharacterView } from '@/components/Characters/CharacterView';
 import { Lore } from '@/components/Lore/Lore';
+import { Chronology } from '@/components/Chronology/Chronology';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 
 interface Character {
@@ -165,6 +166,10 @@ const Index = () => {
 
           {activeSection === 'lore' && showSidebar && (
             <Lore currentWorldId={currentWorldId} />
+          )}
+
+          {activeSection === 'chronology' && showSidebar && (
+            <Chronology currentWorldId={currentWorldId} />
           )}
 
           {/* Інші розділи будуть додані пізніше */}
