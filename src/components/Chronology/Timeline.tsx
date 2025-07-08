@@ -267,7 +267,7 @@ export const Timeline: React.FC<TimelineProps> = ({
                   style={{
                     position: 'absolute',
                     left: `${left - 75 + stackOffset}px`,
-                    top: isEvenYear ? `calc(50% + 40px + ${stackOffset}px)` : `calc(50% - 160px - ${stackOffset}px)`,
+                    top: isEvenYear ? `calc(50% + 22px + ${stackOffset}px)` : `calc(50% - 160px - ${stackOffset}px)`,
                     zIndex: yearEvents.length - index
                   }}
                   onEdit={() => openEditEventModal(event)}
