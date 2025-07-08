@@ -19,7 +19,7 @@ interface SidebarProps {
 const sections = [
   { id: 'characters', name: 'Персонажі', icon: Users },
   { id: 'lore', name: 'Лор', icon: Book },
-  { id: 'timeline', name: 'Хронологія', icon: Calendar },
+  { id: 'chronology', name: 'Хронологія', icon: Calendar },
   { id: 'maps', name: 'Карти світу', icon: MapIcon },
   { id: 'connections', name: "Зв'язки", icon: Edit },
   { id: 'notes', name: 'Нотатки', icon: Edit },
