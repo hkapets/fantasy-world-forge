@@ -48,7 +48,7 @@ export const TimelineEvent: React.FC<TimelineEventProps> = ({
       <div style={{
         position: 'absolute',
         left: '50%',
-        top: style?.top?.toString().includes('- 140px') ? '100%' : '-20px',
+        top: style?.top?.toString().includes('- 160px') ? '100%' : '-20px',
         width: '2px',
         height: '20px',
         background: typeColor,
