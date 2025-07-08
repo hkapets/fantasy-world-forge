@@ -7,6 +7,7 @@ import { Characters } from '@/components/Characters/Characters';
 import { CharacterView } from '@/components/Characters/CharacterView';
 import { Lore } from '@/components/Lore/Lore';
 import { Chronology } from '@/components/Chronology/Chronology';
+import { Notes } from '@/components/Notes/Notes';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 
 interface Character {
@@ -170,6 +171,10 @@ const Index = () => {
 
           {activeSection === 'chronology' && showSidebar && (
             <Chronology currentWorldId={currentWorldId} />
+          )}
+
+          {activeSection === 'notes' && showSidebar && (
+            <Notes currentWorldId={currentWorldId} />
           )}
 
           {/* Інші розділи будуть додані пізніше */}
