@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 
 interface CreateLoreModalProps {
@@ -6,25 +6,27 @@ interface CreateLoreModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (loreData: any) => void;
+  editingItem?: any;
 }
 
 const modalTitles: Record<string, string> = {
-  races: 'Створити расу',
-  bestiary: 'Створити істоту',
-  geography: 'Створити локацію',
-  history: 'Створити історичну подію',
-  politics: 'Створити політичну структуру',
-  religion: 'Створити релігійний/міфологічний запис',
-  languages: 'Створити мову/писемність',
-  magic: 'Створити магічний запис',
-  artifacts: 'Створити артефакт'
+  races: 'расу',
+  bestiary: 'істоту',
+  geography: 'локацію',
+  history: 'історичну подію',
+  politics: 'політичну структуру',
+  religion: 'релігійний/міфологічний запис',
+  languages: 'мову/писемність',
+  magic: 'магічний запис',
+  artifacts: 'артефакт'
 };
 
 export const CreateLoreModal: React.FC<CreateLoreModalProps> = ({
   type,
   isOpen,
   onClose,
-  onSave
+  onSave,
+  editingItem
 }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -38,6 +40,36 @@ export const CreateLoreModal: React.FC<CreateLoreModalProps> = ({
     origin: '',
     magicalSkills: ''
   });
+
+  useEffect(() => {
+    if (editingItem && isOpen) {
+      setFormData({
+        name: editingItem.name || '',
+        image: editingItem.image || '',
+        description: editingItem.description || '',
+        subtype: editingItem.subtype || '',
+        relatedLocations: editingItem.relatedLocations || '',
+        relatedCharacters: editingItem.relatedCharacters || '',
+        dangerLevel: editingItem.dangerLevel || '',
+        eventDate: editingItem.eventDate || '',
+        origin: editingItem.origin || '',
+        magicalSkills: editingItem.magicalSkills || ''
+      });
+    } else if (isOpen) {
+      setFormData({
+        name: '',
+        image: '',
+        description: '',
+        subtype: '',
+        relatedLocations: '',
+        relatedCharacters: '',
+        dangerLevel: '',
+        eventDate: '',
+        origin: '',
+        magicalSkills: ''
+      });
+    }
+  }, [editingItem, isOpen]);
 
   const handleSubmit = () => {
     if (!formData.name.trim() || !formData.description.trim()) {
@@ -225,11 +257,15 @@ export const CreateLoreModal: React.FC<CreateLoreModalProps> = ({
     }
   };
 
-  return (
+    const title = editingItem 
+      ? `Редагувати ${modalTitles[type] || 'запис'}`
+      : `Створити ${modalTitles[type] || 'запис'}`;
+
+    return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={modalTitles[type] || 'Створити запис'}
+      title={title}
       onSave={handleSubmit}
       onCancel={handleCancel}
       maxWidth="600px"
