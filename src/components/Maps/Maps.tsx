@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Plus, Search, Map, MapPin, Eye, Globe } from 'lucide-react';
+import { Plus, Search, Map, MapPin, Eye, Globe, Edit, Trash2 } from 'lucide-react';
 import { useMapsData, WorldMap } from '@/hooks/useMapsData';
+import { CreateMapModal } from '../Modal/CreateMapModal';
 
 interface MapsProps {
   currentWorldId: string | null;
@@ -10,6 +11,7 @@ export const Maps: React.FC<MapsProps> = ({ currentWorldId }) => {
   const { maps, markers, addMap, updateMap, deleteMap, getMarkersByMap, searchMaps } = useMapsData(currentWorldId || '');
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingMap, setEditingMap] = useState<WorldMap | null>(null);
   const [viewingMap, setViewingMap] = useState<WorldMap | null>(null);
 
   if (!currentWorldId) {
@@ -30,6 +32,28 @@ export const Maps: React.FC<MapsProps> = ({ currentWorldId }) => {
 
   const totalMarkers = markers.length;
   const publicMaps = maps.filter(map => map.isPublic).length;
+
+  const handleCreateMap = (mapData: Omit<WorldMap, 'id' | 'worldId' | 'createdAt' | 'lastModified'>) => {
+    addMap(mapData);
+  };
+
+  const handleEditMap = (mapData: Omit<WorldMap, 'id' | 'worldId' | 'createdAt' | 'lastModified'>) => {
+    if (editingMap) {
+      updateMap(editingMap.id, mapData);
+      setEditingMap(null);
+    }
+  };
+
+  const openEditModal = (map: WorldMap) => {
+    setEditingMap(map);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleDeleteMap = (mapId: string) => {
+    if (confirm('Видалити карту? Це також видалить всі маркери на ній.')) {
+      deleteMap(mapId);
+    }
+  };
 
   return (
     <div style={{ padding: '2rem' }}>
@@ -270,6 +294,20 @@ export const Maps: React.FC<MapsProps> = ({ currentWorldId }) => {
                     <Eye size={16} style={{ marginRight: '0.5rem' }} />
                     Переглянути
                   </button>
+                  
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => openEditModal(map)}
+                  >
+                    <Edit size={16} />
+                  </button>
+                  
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDeleteMap(map.id)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </div>
             );
@@ -277,10 +315,16 @@ export const Maps: React.FC<MapsProps> = ({ currentWorldId }) => {
         </div>
       )}
 
-      {/* TODO: Модальні вікна будуть додані в наступних кроках */}
-      {isCreateModalOpen && (
-        <div>Модальне вікно створення карти (буде в кроці 3)</div>
-      )}
+      <CreateMapModal
+        isOpen={isCreateModalOpen}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setEditingMap(null);
+        }}
+        onSave={editingMap ? handleEditMap : handleCreateMap}
+        editingMap={editingMap}
+        currentWorldId={currentWorldId}
+      />
       
       {viewingMap && (
         <div>Компонент перегляду карти (буде в кроці 5)</div>
