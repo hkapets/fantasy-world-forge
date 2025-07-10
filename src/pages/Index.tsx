@@ -8,6 +8,7 @@ import { CharacterView } from '@/components/Characters/CharacterView';
 import { Lore } from '@/components/Lore/Lore';
 import { Chronology } from '@/components/Chronology/Chronology';
 import { Notes } from '@/components/Notes/Notes';
+import { Maps } from '@/components/Maps/Maps';
 import { Relationships } from '@/components/Relationships/Relationships';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 
@@ -178,11 +179,13 @@ const Index = () => {
             <Notes currentWorldId={currentWorldId} />
           )}
 
+          {activeSection === 'maps' && showSidebar && (
+            <Maps currentWorldId={currentWorldId} />
+          )}
+
           {activeSection === 'relationships' && showSidebar && (
             <Relationships currentWorldId={currentWorldId} />
           )}
-
-          {/* Інші розділи будуть додані пізніше */}
         </main>
       </div>
 
