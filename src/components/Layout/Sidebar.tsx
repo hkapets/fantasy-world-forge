@@ -21,7 +21,7 @@ const sections = [
   { id: 'lore', name: 'Лор', icon: Book },
   { id: 'chronology', name: 'Хронологія', icon: Calendar },
   { id: 'maps', name: 'Карти світу', icon: MapIcon },
-  { id: 'connections', name: "Зв'язки", icon: Edit },
+  { id: 'relationships', name: "Зв'язки", icon: Edit },
   { id: 'notes', name: 'Нотатки', icon: Edit },
   { id: 'scenarios', name: 'Сценарії', icon: Edit },
   { id: 'settings', name: 'Налаштування', icon: Settings }
