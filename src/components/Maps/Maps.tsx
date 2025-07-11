@@ -3,6 +3,7 @@ import { Plus, Search } from 'lucide-react';
 import { useMapsData, WorldMap } from '@/hooks/useMapsData';
 import { CreateMapModal } from '../Modal/CreateMapModal';
 import { MapCard } from './MapCard';
+import { MapView } from './MapView';
 
 interface MapsProps {
   currentWorldId: string | null;
@@ -198,7 +199,11 @@ export const Maps: React.FC<MapsProps> = ({ currentWorldId }) => {
       />
       
       {viewingMap && (
-        <div>Компонент перегляду карти (буде в кроці 5)</div>
+        <MapView
+          map={viewingMap}
+          onClose={() => setViewingMap(null)}
+          currentWorldId={currentWorldId}
+        />
       )}
     </div>
   );
