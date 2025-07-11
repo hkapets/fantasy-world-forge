@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { X, Plus, MapPin, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { X, Plus, MapPin, Edit, Trash2, Eye, EyeOff, ZoomIn, ZoomOut, Maximize, RotateCcw, Move } from 'lucide-react';
 import { WorldMap, MapMarker, useMapsData } from '@/hooks/useMapsData';
 import { CreateMarkerModal } from '../Modal/CreateMarkerModal';
 
@@ -17,9 +17,77 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
   const [editingMarker, setEditingMarker] = useState<MapMarker | null>(null);
   const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | null>(null);
   const [visibleMarkers, setVisibleMarkers] = useState<Set<string>>(new Set());
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [lastPanPoint, setLastPanPoint] = useState({ x: 0, y: 0 });
+  const [showMiniMap, setShowMiniMap] = useState(true);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapImageRef = useRef<HTMLDivElement>(null);
 
   const mapMarkers = getMarkersByMap(map.id);
+
+  // Зум функції
+  const handleZoomIn = () => setZoom(prev => Math.min(prev * 1.2, 5));
+  const handleZoomOut = () => setZoom(prev => Math.max(prev / 1.2, 0.2));
+  const handleResetView = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+  const handleFitToScreen = () => {
+    if (!mapContainerRef.current || !mapImageRef.current) return;
+    
+    const container = mapContainerRef.current;
+    const containerRatio = container.clientWidth / container.clientHeight;
+    const imageRatio = map.width / map.height;
+    
+    let newZoom;
+    if (containerRatio > imageRatio) {
+      newZoom = container.clientHeight / map.height * 0.9;
+    } else {
+      newZoom = container.clientWidth / map.width * 0.9;
+    }
+    
+    setZoom(Math.max(0.2, Math.min(5, newZoom)));
+    setPan({ x: 0, y: 0 });
+  };
+
+  // Панування
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (isAddingMarker) return;
+    setIsPanning(true);
+    setLastPanPoint({ x: e.clientX, y: e.clientY });
+  }, [isAddingMarker]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    // Оновлення позиції миші для координат
+    if (mapContainerRef.current) {
+      const rect = mapContainerRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left - pan.x) / zoom / rect.width) * 100;
+      const y = ((e.clientY - rect.top - pan.y) / zoom / rect.height) * 100;
+      setMousePosition({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
+    }
+
+    // Панування
+    if (isPanning) {
+      const deltaX = e.clientX - lastPanPoint.x;
+      const deltaY = e.clientY - lastPanPoint.y;
+      setPan(prev => ({ x: prev.x + deltaX, y: prev.y + deltaY }));
+      setLastPanPoint({ x: e.clientX, y: e.clientY });
+    }
+  }, [isPanning, lastPanPoint, pan, zoom]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsPanning(false);
+  }, []);
+
+  // Колесо миші для зуму
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+    setZoom(prev => Math.max(0.2, Math.min(5, prev * zoomFactor)));
+  }, []);
 
   // Ініціалізуємо всі маркери як видимі
   useEffect(() => {
@@ -27,11 +95,13 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
   }, [mapMarkers]);
 
   const handleMapClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!isAddingMarker || !mapContainerRef.current) return;
+    if (!isAddingMarker || !mapContainerRef.current || isPanning) return;
 
     const rect = mapContainerRef.current.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    const x = ((event.clientX - rect.left - pan.x) / zoom / rect.width) * 100;
+    const y = ((event.clientY - rect.top - pan.y) / zoom / rect.height) * 100;
+
+    if (x < 0 || x > 100 || y < 0 || y > 100) return;
 
     setClickPosition({ x, y });
     setIsCreateMarkerModalOpen(true);
@@ -84,12 +154,13 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
   const getMarkerStyle = (marker: MapMarker) => {
     const isVisible = visibleMarkers.has(marker.id);
     const sizeMap = { small: 8, medium: 12, large: 16 };
+    const scaledSize = sizeMap[marker.size] * zoom;
     
     return {
       position: 'absolute' as const,
       left: `${marker.x}%`,
       top: `${marker.y}%`,
-      transform: 'translate(-50%, -50%)',
+      transform: `translate(-50%, -50%) scale(${Math.max(0.5, Math.min(2, zoom))})`,
       width: `${sizeMap[marker.size]}px`,
       height: `${sizeMap[marker.size]}px`,
       backgroundColor: marker.color,
@@ -145,6 +216,50 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
           </div>
           
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {/* Контроли зуму */}
+            <div style={{ display: 'flex', gap: '0.25rem' }}>
+              <button
+                className="btn btn-ghost"
+                onClick={handleZoomIn}
+                title="Збільшити"
+                style={{ padding: '0.5rem' }}
+              >
+                <ZoomIn size={16} />
+              </button>
+              <button
+                className="btn btn-ghost"
+                onClick={handleZoomOut}
+                title="Зменшити"
+                style={{ padding: '0.5rem' }}
+              >
+                <ZoomOut size={16} />
+              </button>
+              <button
+                className="btn btn-ghost"
+                onClick={handleFitToScreen}
+                title="Вмістити на екран"
+                style={{ padding: '0.5rem' }}
+              >
+                <Maximize size={16} />
+              </button>
+              <button
+                className="btn btn-ghost"
+                onClick={handleResetView}
+                title="Скинути вигляд"
+                style={{ padding: '0.5rem' }}
+              >
+                <RotateCcw size={16} />
+              </button>
+              <button
+                className="btn btn-ghost"
+                onClick={() => setShowMiniMap(!showMiniMap)}
+                title="Міні-карта"
+                style={{ padding: '0.5rem' }}
+              >
+                <MapPin size={16} />
+              </button>
+            </div>
+            
             <button
               className={`btn ${isAddingMarker ? 'btn-secondary' : 'btn-primary'}`}
               onClick={() => setIsAddingMarker(!isAddingMarker)}
@@ -167,36 +282,132 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
         {/* Контейнер карти */}
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
           {/* Карта */}
-          <div style={{ flex: 1, position: 'relative', overflow: 'auto' }}>
+          <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+            {/* Координати та зум */}
+            <div style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              backgroundColor: 'var(--background)',
+              border: '1px solid var(--border)',
+              borderRadius: '0.5rem',
+              padding: '0.5rem',
+              fontSize: '0.75rem',
+              zIndex: 15,
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}>
+              <div>Зум: {(zoom * 100).toFixed(0)}%</div>
+              <div>X: {mousePosition.x.toFixed(1)}%</div>
+              <div>Y: {mousePosition.y.toFixed(1)}%</div>
+            </div>
+
+            {/* Міні-карта */}
+            {showMiniMap && (
+              <div style={{
+                position: 'absolute',
+                bottom: '1rem',
+                right: '1rem',
+                width: '150px',
+                height: '100px',
+                backgroundColor: 'var(--background)',
+                border: '2px solid var(--border)',
+                borderRadius: '0.5rem',
+                overflow: 'hidden',
+                zIndex: 15,
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                <div style={{
+                  width: '100%',
+                  height: '100%',
+                  backgroundImage: map.imageUrl ? `url(${map.imageUrl})` : 
+                                 map.imageFile ? `url(${map.imageFile})` : 'none',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundColor: 'var(--muted)',
+                  position: 'relative'
+                }}>
+                  {/* Viewport indicator */}
+                  <div style={{
+                    position: 'absolute',
+                    border: '1px solid var(--primary)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    left: `${50 - (50 / zoom)}%`,
+                    top: `${50 - (50 / zoom)}%`,
+                    width: `${100 / zoom}%`,
+                    height: `${100 / zoom}%`,
+                    transform: `translate(${-pan.x / (zoom * 3)}px, ${-pan.y / (zoom * 3)}px)`
+                  }} />
+                  {/* Міні маркери */}
+                  {mapMarkers.filter(m => visibleMarkers.has(m.id)).map(marker => (
+                    <div
+                      key={marker.id}
+                      style={{
+                        position: 'absolute',
+                        left: `${marker.x}%`,
+                        top: `${marker.y}%`,
+                        width: '3px',
+                        height: '3px',
+                        backgroundColor: marker.color,
+                        borderRadius: '50%',
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div
               ref={mapContainerRef}
               onClick={handleMapClick}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onWheel={handleWheel}
               style={{
                 position: 'relative',
                 width: '100%',
                 height: '100%',
                 minHeight: '400px',
-                cursor: isAddingMarker ? 'crosshair' : 'default',
-                backgroundImage: map.imageUrl ? `url(${map.imageUrl})` : 
-                               map.imageFile ? `url(${map.imageFile})` : 'none',
-                backgroundSize: 'contain',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
+                cursor: isAddingMarker ? 'crosshair' : isPanning ? 'grabbing' : 'grab',
+                overflow: 'hidden',
                 backgroundColor: 'var(--muted)'
               }}
             >
-              {/* Маркери */}
-              {mapMarkers.map(marker => (
-                <div
-                  key={marker.id}
-                  style={getMarkerStyle(marker)}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedMarker(marker);
-                  }}
-                  title={marker.title}
-                />
-              ))}
+              <div
+                ref={mapImageRef}
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  transform: `translate(calc(-50% + ${pan.x}px), calc(-50% + ${pan.y}px)) scale(${zoom})`,
+                  transformOrigin: 'center',
+                  width: '80%',
+                  height: '80%',
+                  backgroundImage: map.imageUrl ? `url(${map.imageUrl})` : 
+                                 map.imageFile ? `url(${map.imageFile})` : 'none',
+                  backgroundSize: 'contain',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center',
+                  transition: isPanning ? 'none' : 'transform 0.2s ease'
+                }}
+              >
+                {/* Маркери */}
+                {mapMarkers.map(marker => (
+                  <div
+                    key={marker.id}
+                    style={getMarkerStyle(marker)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isPanning) {
+                        setSelectedMarker(marker);
+                      }
+                    }}
+                    title={marker.title}
+                  />
+                ))}
+              </div>
 
               {/* Інструкція для додавання маркерів */}
               {isAddingMarker && (
