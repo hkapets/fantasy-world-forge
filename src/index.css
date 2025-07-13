@@ -10,6 +10,7 @@
   /* Фонові кольори */
   --bg-primary: #0F0B14; /* Глибока темна нічка */
   --bg-secondary: #1A1625; /* Темний фіолетовий */
+  --bg-tertiary: #2A2031; /* Третинний фон */
   --bg-card: #231B2E; /* Картка */
   --bg-input: #2D2438; /* Поле вводу */
   --bg-modal: rgba(15, 11, 20, 0.95); /* Модальне вікно */
@@ -98,6 +99,7 @@ body {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   transition: var(--transition-normal);
+  padding: 1.5rem;
 }
 
 .card:hover {

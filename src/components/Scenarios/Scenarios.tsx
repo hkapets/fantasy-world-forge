@@ -74,34 +74,57 @@ export const Scenarios: React.FC<ScenariosProps> = ({ currentWorldId }) => {
     setIsCreateModalOpen(true);
   };
 
-  if (!currentWorldId) {
-    return (
-      <div style={{
-        padding: '2rem',
+    if (!currentWorldId) return (
+      <div className="card" style={{
+        margin: '2rem',
         textAlign: 'center',
-        color: 'var(--text-secondary)'
+        padding: '3rem',
+        background: 'var(--gradient-card)'
       }}>
-        Оберіть світ для роботи зі сценаріями
+        <h3 style={{ 
+          fontSize: '1.25rem', 
+          marginBottom: '0.5rem',
+          color: 'var(--text-primary)'
+        }}>
+          🌟 Оберіть світ для створення сценаріїв
+        </h3>
+        <p style={{ color: 'var(--text-secondary)' }}>
+          Сценарії допоможуть структурувати пригоди у вашому фентезійному світі
+        </p>
       </div>
     );
-  }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      {/* Заголовок та кнопка створення */}
+    <div style={{ padding: '2rem', minHeight: 'calc(100vh - 80px)' }}>
+      {/* Заголовок з статистикою */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: '2rem'
+        marginBottom: '2rem',
+        background: 'var(--gradient-card)',
+        padding: '1.5rem',
+        borderRadius: 'var(--radius-lg)',
+        border: '1px solid var(--border-primary)'
       }}>
-        <h1 style={{
-          fontSize: '2rem',
-          fontWeight: '700',
-          color: 'var(--text-primary)'
-        }}>
-          Сценарії
-        </h1>
+        <div>
+          <h1 style={{
+            fontSize: '2rem',
+            fontWeight: '700',
+            color: 'var(--text-primary)',
+            marginBottom: '0.5rem'
+          }}>
+            📜 Сценарії
+          </h1>
+          <p style={{
+            color: 'var(--text-secondary)',
+            fontSize: '0.875rem'
+          }}>
+            Всього сценаріїв: {worldScenarios.length} | 
+            Активних: {worldScenarios.filter(s => s.status === 'active').length} | 
+            Завершених: {worldScenarios.filter(s => s.status === 'completed').length}
+          </p>
+        </div>
         <button 
           className="btn btn-primary"
           onClick={() => setIsCreateModalOpen(true)}
@@ -187,50 +210,91 @@ export const Scenarios: React.FC<ScenariosProps> = ({ currentWorldId }) => {
         </select>
       </div>
 
+      {/* Швидкі фільтри */}
+      <div style={{
+        display: 'flex',
+        gap: '0.5rem',
+        marginBottom: '1.5rem',
+        flexWrap: 'wrap'
+      }}>
+        {[
+          { label: 'Всі', key: 'all', count: worldScenarios.length },
+          { label: 'Чернетки', key: 'draft', count: worldScenarios.filter(s => s.status === 'draft').length },
+          { label: 'Активні', key: 'active', count: worldScenarios.filter(s => s.status === 'active').length },
+          { label: 'Завершені', key: 'completed', count: worldScenarios.filter(s => s.status === 'completed').length }
+        ].map(filter => (
+          <button
+            key={filter.key}
+            className={filterStatus === filter.key ? 'btn btn-primary' : 'btn btn-secondary'}
+            onClick={() => setFilterStatus(filter.key)}
+            style={{ fontSize: '0.75rem' }}
+          >
+            {filter.label} ({filter.count})
+          </button>
+        ))}
+      </div>
       {/* Список сценаріїв */}
       {worldScenarios.length === 0 ? (
-        <div style={{
+        <div className="card" style={{
           textAlign: 'center',
           padding: '4rem 2rem',
-          color: 'var(--text-secondary)'
+          background: 'var(--gradient-card)',
+          marginTop: '2rem'
         }}>
           {searchQuery || filterType !== 'all' || filterStatus !== 'all' ? (
             <div>
               <h3 style={{ 
-                fontSize: '1.25rem', 
-                marginBottom: '0.5rem',
+                fontSize: '1.5rem', 
+                marginBottom: '1rem',
                 color: 'var(--text-primary)'
               }}>
-                Сценаріїв не знайдено
+                🔍 Сценаріїв не знайдено
               </h3>
-              <p>Спробуйте змінити критерії пошуку або фільтрування</p>
+              <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>
+                Спробуйте змінити критерії пошуку або фільтрування
+              </p>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => {
+                  setSearchQuery('');
+                  setFilterType('all');
+                  setFilterStatus('all');
+                }}
+              >
+                Скинути фільтри
+              </button>
             </div>
           ) : (
             <div>
               <h3 style={{ 
-                fontSize: '1.25rem', 
-                marginBottom: '0.5rem',
+                fontSize: '1.5rem', 
+                marginBottom: '1rem',
                 color: 'var(--text-primary)'
               }}>
-                У цьому світі ще немає сценаріїв
+                📚 Створіть перший сценарій
               </h3>
-              <p>Створіть перший сценарій для вашого фентезійного світу</p>
+              <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
+                Сценарії допоможуть організувати пригоди, квести та події у вашому фентезійному світі
+              </p>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => setIsCreateModalOpen(true)}
+              >
+                <Plus size={20} style={{ marginRight: '0.5rem' }} />
+                Створити перший сценарій
+              </button>
             </div>
           )}
         </div>
       ) : (
         <>
-          {/* Статистика */}
+          {/* Улучшенная сітка з сценаріями */}
           <div style={{
-            marginBottom: '1rem',
-            fontSize: '0.875rem',
-            color: 'var(--text-secondary)'
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: '1.5rem',
+            marginTop: '1rem'
           }}>
-            Знайдено сценаріїв: {worldScenarios.length}
-          </div>
-
-          {/* Грід з сценаріями */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {worldScenarios.map(scenario => (
               <ScenarioCard
                 key={scenario.id}
@@ -239,6 +303,34 @@ export const Scenarios: React.FC<ScenariosProps> = ({ currentWorldId }) => {
                 onDelete={() => handleDeleteScenario(scenario.id)}
               />
             ))}
+          </div>
+
+          {/* Кнопка додавання ще одного сценарію */}
+          <div 
+            className="card"
+            style={{
+              marginTop: '1.5rem',
+              border: '2px dashed var(--border-primary)',
+              background: 'transparent',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              textAlign: 'center',
+              padding: '2rem'
+            }}
+            onClick={() => setIsCreateModalOpen(true)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--fantasy-primary)';
+              e.currentTarget.style.background = 'var(--bg-tertiary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-primary)';
+              e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            <Plus size={24} style={{ marginBottom: '0.5rem', color: 'var(--text-muted)' }} />
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+              Додати новий сценарій
+            </p>
           </div>
         </>
       )}

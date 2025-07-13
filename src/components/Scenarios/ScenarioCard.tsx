@@ -54,10 +54,26 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   };
 
   return (
-    <div className="card card-hover" style={{
-      cursor: 'pointer',
-      position: 'relative'
-    }}>
+    <div 
+      className="card"
+      style={{
+        cursor: 'pointer',
+        position: 'relative',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
+        const actions = e.currentTarget.querySelector('.card-actions') as HTMLElement;
+        if (actions) actions.style.opacity = '1';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+        const actions = e.currentTarget.querySelector('.card-actions') as HTMLElement;
+        if (actions) actions.style.opacity = '0';
+      }}
+    >
       {/* Дії */}
       <div style={{
         position: 'absolute',
