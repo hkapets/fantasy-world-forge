@@ -4,6 +4,7 @@ import { Scenario } from '@/hooks/useScenariosData';
 
 interface ScenarioCardProps {
   scenario: Scenario;
+  onClick?: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -38,6 +39,7 @@ const statusColors = {
 
 export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   scenario,
+  onClick,
   onEdit,
   onDelete
 }) => {
@@ -61,6 +63,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
         position: 'relative',
         transition: 'transform 0.2s ease, box-shadow 0.2s ease'
       }}
+      onClick={onClick}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-2px)';
         e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';

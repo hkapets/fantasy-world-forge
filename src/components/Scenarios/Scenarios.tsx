@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, Search, Filter } from 'lucide-react';
 import { ScenarioCard } from './ScenarioCard';
+import { ScenarioView } from './ScenarioView';
 import { CreateScenarioModal } from '../Modal/CreateScenarioModal';
 import { useScenariosData, Scenario } from '@/hooks/useScenariosData';
 
@@ -12,6 +13,7 @@ export const Scenarios: React.FC<ScenariosProps> = ({ currentWorldId }) => {
   const { scenarios, addScenario, updateScenario, deleteScenario, getScenariosByWorld } = useScenariosData();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingScenario, setEditingScenario] = useState<Scenario | null>(null);
+  const [viewingScenario, setViewingScenario] = useState<Scenario | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -74,25 +76,53 @@ export const Scenarios: React.FC<ScenariosProps> = ({ currentWorldId }) => {
     setIsCreateModalOpen(true);
   };
 
-    if (!currentWorldId) return (
-      <div className="card" style={{
-        margin: '2rem',
-        textAlign: 'center',
-        padding: '3rem',
-        background: 'var(--gradient-card)'
-      }}>
-        <h3 style={{ 
-          fontSize: '1.25rem', 
-          marginBottom: '0.5rem',
-          color: 'var(--text-primary)'
-        }}>
-          🌟 Оберіть світ для створення сценаріїв
-        </h3>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Сценарії допоможуть структурувати пригоди у вашому фентезійному світі
-        </p>
-      </div>
+  const handleViewScenario = (scenario: Scenario) => {
+    setViewingScenario(scenario);
+  };
+
+  const handleBackFromScenario = () => {
+    setViewingScenario(null);
+  };
+
+  const handleSaveScenarioFromView = (scenarioData: Omit<Scenario, 'id' | 'worldId' | 'createdAt' | 'lastModified'>) => {
+    if (viewingScenario) {
+      updateScenario(viewingScenario.id, scenarioData);
+      setViewingScenario(prev => prev ? { ...prev, ...scenarioData, lastModified: new Date().toISOString() } : null);
+    }
+  };
+
+  // Якщо переглядаємо конкретний сценарій
+  if (viewingScenario) {
+    return (
+      <ScenarioView
+        scenario={viewingScenario}
+        onBack={handleBackFromScenario}
+        onEdit={(scenario) => setViewingScenario(scenario)}
+        onDelete={handleDeleteScenario}
+        onSave={handleSaveScenarioFromView}
+      />
     );
+  }
+
+  if (!currentWorldId) return (
+    <div className="card" style={{
+      margin: '2rem',
+      textAlign: 'center',
+      padding: '3rem',
+      background: 'var(--gradient-card)'
+    }}>
+      <h3 style={{ 
+        fontSize: '1.25rem', 
+        marginBottom: '0.5rem',
+        color: 'var(--text-primary)'
+      }}>
+        🌟 Оберіть світ для створення сценаріїв
+      </h3>
+      <p style={{ color: 'var(--text-secondary)' }}>
+        Сценарії допоможуть структурувати пригоди у вашому фентезійному світі
+      </p>
+    </div>
+  );
 
   return (
     <div style={{ padding: '2rem', minHeight: 'calc(100vh - 80px)' }}>
@@ -299,6 +329,7 @@ export const Scenarios: React.FC<ScenariosProps> = ({ currentWorldId }) => {
               <ScenarioCard
                 key={scenario.id}
                 scenario={scenario}
+                onClick={() => handleViewScenario(scenario)}
                 onEdit={() => openEditModal(scenario)}
                 onDelete={() => handleDeleteScenario(scenario.id)}
               />
