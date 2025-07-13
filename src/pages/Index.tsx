@@ -10,6 +10,7 @@ import { Chronology } from '@/components/Chronology/Chronology';
 import { Notes } from '@/components/Notes/Notes';
 import { Maps } from '@/components/Maps/Maps';
 import { Relationships } from '@/components/Relationships/Relationships';
+import { Relationships } from '@/components/Relationships/Relationships';
 import { Scenarios } from '@/components/Scenarios/Scenarios';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 
@@ -182,6 +183,10 @@ const Index = () => {
 
           {activeSection === 'maps' && showSidebar && (
             <Maps currentWorldId={currentWorldId} />
+          )}
+
+          {activeSection === 'relationships' && showSidebar && (
+            <Relationships currentWorldId={currentWorldId} />
           )}
 
           {activeSection === 'relationships' && showSidebar && (
