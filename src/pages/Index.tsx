@@ -10,6 +10,7 @@ import { Chronology } from '@/components/Chronology/Chronology';
 import { Notes } from '@/components/Notes/Notes';
 import { Maps } from '@/components/Maps/Maps';
 import { Relationships } from '@/components/Relationships/Relationships';
+import { Scenarios } from '@/components/Scenarios/Scenarios';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 
 interface Character {
@@ -185,6 +186,10 @@ const Index = () => {
 
           {activeSection === 'relationships' && showSidebar && (
             <Relationships currentWorldId={currentWorldId} />
+          )}
+
+          {activeSection === 'scenarios' && showSidebar && (
+            <Scenarios currentWorldId={currentWorldId} />
           )}
         </main>
       </div>
