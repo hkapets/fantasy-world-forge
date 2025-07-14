@@ -12,6 +12,7 @@ import { Maps } from '@/components/Maps/Maps';
 import { Relationships } from '@/components/Relationships/Relationships';
 import { Scenarios } from '@/components/Scenarios/Scenarios';
 import { useWorldsData } from '@/hooks/useLocalStorage';
+import { Settings } from '@/components/Settings/Settings';
 
 interface Character {
   id: string;
@@ -194,6 +195,10 @@ const Index = () => {
 
           {activeSection === 'scenarios' && showSidebar && (
             <Scenarios currentWorldId={currentWorldId} />
+          )}
+
+          {activeSection === 'settings' && (
+            <Settings currentWorldId={currentWorldId} />
           )}
         </main>
       </div>
