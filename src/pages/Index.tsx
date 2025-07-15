@@ -61,17 +61,62 @@ const Index = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    // TODO: Реалізувати пошук
+    // Глобальний пошук по всіх розділах
+    console.log('Searching for:', query);
   };
 
   const handleSave = () => {
-    // TODO: Реалізувати збереження
-    alert('Дані збережено!');
+    // Збереження всіх даних
+    try {
+      // Дані вже автоматично зберігаються в localStorage через хуки
+      // Тут можна додати додаткову логіку збереження
+      const timestamp = new Date().toLocaleString('uk-UA');
+      localStorage.setItem('fantasyWorldBuilder_lastSave', timestamp);
+      alert(`Дані збережено! (${timestamp})`);
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('Помилка при збереженні даних');
+    }
   };
 
   const handleExport = () => {
-    // TODO: Реалізувати експорт
-    alert('Експорт буде реалізовано пізніше');
+    // Експорт всіх даних (використовуємо ту ж логіку що в налаштуваннях)
+    try {
+      const allData = {
+        worlds: JSON.parse(localStorage.getItem('fantasyWorldBuilder_worlds') || '[]'),
+        characters: JSON.parse(localStorage.getItem('fantasyWorldBuilder_characters') || '[]'),
+        currentWorld: localStorage.getItem('fantasyWorldBuilder_currentWorld'),
+        settings: JSON.parse(localStorage.getItem('fantasyWorldBuilder_settings') || '{}'),
+        exportDate: new Date().toISOString(),
+        version: '1.0'
+      };
+
+      // Додаємо дані з усіх світів
+      const worlds = allData.worlds;
+      for (const world of worlds) {
+        allData[`lore_${world.id}`] = JSON.parse(localStorage.getItem(`fantasyWorldBuilder_lore_${world.id}`) || '[]');
+        allData[`chronologies_${world.id}`] = JSON.parse(localStorage.getItem(`fantasyWorldBuilder_chronologies_${world.id}`) || '[]');
+        allData[`events_${world.id}`] = JSON.parse(localStorage.getItem(`fantasyWorldBuilder_events_${world.id}`) || '[]');
+        allData[`notes_${world.id}`] = JSON.parse(localStorage.getItem(`fantasyWorldBuilder_notes_${world.id}`) || '[]');
+        allData[`relationships_${world.id}`] = JSON.parse(localStorage.getItem(`fantasyWorldBuilder_relationships_${world.id}`) || '[]');
+        allData[`maps_${world.id}`] = JSON.parse(localStorage.getItem(`fantasyWorldBuilder_maps_${world.id}`) || '[]');
+        allData[`markers_${world.id}`] = JSON.parse(localStorage.getItem(`fantasyWorldBuilder_markers_${world.id}`) || '[]');
+        allData[`scenarios`] = JSON.parse(localStorage.getItem(`fantasyWorldBuilder_scenarios`) || '[]');
+      }
+
+      const dataStr = JSON.stringify(allData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(dataBlob);
+      link.download = `fantasy-world-backup-${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+      
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('Помилка при експорті даних');
+    }
   };
 
   const handleHomeClick = () => {
