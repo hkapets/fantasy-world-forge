@@ -60,9 +60,14 @@ const Index = () => {
   };
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    // Глобальний пошук по всіх розділах
-    console.log('Searching for:', query);
+    // Глобальний пошук тепер обробляється в GlobalSearchModal
+  };
+
+  const handleNavigate = (section: string, subsection?: string, itemId?: string) => {
+    setActiveSection(section);
+    // Тут можна додати логіку для навігації до конкретного елемента
+    // Наприклад, встановити ID елемента для відкриття
+    console.log('Navigate to:', { section, subsection, itemId });
   };
 
   const handleSave = () => {
@@ -160,12 +165,12 @@ const Index = () => {
       background: 'var(--bg-primary)'
     }}>
       <Header
-        onSearch={handleSearch}
         soundEnabled={soundEnabled}
         onToggleSound={() => setSoundEnabled(!soundEnabled)}
         onSave={handleSave}
         onExport={handleExport}
         onHomeClick={handleHomeClick}
+        onNavigate={handleNavigate}
       />
 
       <div style={{ 
