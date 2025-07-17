@@ -2,11 +2,11 @@ import React from 'react';
 import { Search, Volume2, VolumeX, Save, Download, Command } from 'lucide-react';
 import fantasyIcon from '@/assets/fantasy-icon.png';
 import { GlobalSearchModal } from './GlobalSearchModal';
+import { MusicPlayer } from './MusicPlayer';
+import { useSoundSystem } from '@/hooks/useSoundSystem';
 import { useState } from 'react';
 
 interface HeaderProps {
-  soundEnabled: boolean;
-  onToggleSound: () => void;
   onSave: () => void;
   onExport: () => void;
   onHomeClick: () => void;
@@ -14,22 +14,23 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  soundEnabled,
-  onToggleSound,
   onSave,
   onExport,
   onHomeClick,
   onNavigate
 }) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const { isEnabled, toggleEnabled, playEffect } = useSoundSystem();
 
   const handleSearchClick = () => {
+    playEffect('buttonClick');
     setIsSearchModalOpen(true);
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       e.preventDefault();
+      playEffect('buttonClick');
       setIsSearchModalOpen(true);
     }
   };
@@ -132,25 +133,34 @@ export const Header: React.FC<HeaderProps> = ({
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.75rem'
+          gap: '1rem'
         }}>
+          {/* Музичний плеєр */}
+          <MusicPlayer />
+
           <button
             className="btn btn-secondary"
-            onClick={onToggleSound}
+            onClick={() => {
+              playEffect('buttonClick');
+              toggleEnabled();
+            }}
             style={{
               padding: '0.5rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
             }}
-            title={soundEnabled ? 'Вимкнути звук' : 'Увімкнути звук'}
+            title={isEnabled ? 'Вимкнути звук' : 'Увімкнути звук'}
           >
-            {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+            {isEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
           </button>
 
           <button
             className="btn btn-secondary"
-            onClick={onSave}
+            onClick={() => {
+              playEffect('save');
+              onSave();
+            }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -163,7 +173,10 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             className="btn btn-primary"
-            onClick={onExport}
+            onClick={() => {
+              playEffect('success');
+              onExport();
+            }}
             style={{
               display: 'flex',
               alignItems: 'center',

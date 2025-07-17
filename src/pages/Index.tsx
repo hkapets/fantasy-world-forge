@@ -13,6 +13,7 @@ import { Relationships } from '@/components/Relationships/Relationships';
 import { Scenarios } from '@/components/Scenarios/Scenarios';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 import { Settings } from '@/components/Settings/Settings';
+import { useSoundSystem } from '@/hooks/useSoundSystem';
 
 interface Character {
   id: string;
@@ -40,22 +41,26 @@ const Index = () => {
     getCurrentWorld
   } = useWorldsData();
 
+  const { playEffect } = useSoundSystem();
+
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isCreateWorldModalOpen, setIsCreateWorldModalOpen] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewingCharacter, setViewingCharacter] = useState<Character | null>(null);
   const [characters, setCharacters] = useState<Character[]>([]);
 
   const handleCreateWorld = () => {
+    playEffect('buttonClick');
     setIsCreateWorldModalOpen(true);
   };
 
   const handleSaveWorld = (worldData: { name: string; description: string }) => {
+    playEffect('create');
     addWorld(worldData);
   };
 
   const handleSelectWorld = (worldId: string) => {
+    playEffect('pageFlip');
     setCurrentWorldId(worldId);
   };
 
@@ -64,6 +69,7 @@ const Index = () => {
   };
 
   const handleNavigate = (section: string, subsection?: string, itemId?: string) => {
+    playEffect('pageFlip');
     setActiveSection(section);
     // Тут можна додати логіку для навігації до конкретного елемента
     // Наприклад, встановити ID елемента для відкриття
@@ -72,6 +78,7 @@ const Index = () => {
 
   const handleSave = () => {
     // Збереження всіх даних
+    playEffect('save');
     try {
       // Дані вже автоматично зберігаються в localStorage через хуки
       // Тут можна додати додаткову логіку збереження
@@ -86,6 +93,7 @@ const Index = () => {
 
   const handleExport = () => {
     // Експорт всіх даних (використовуємо ту ж логіку що в налаштуваннях)
+    playEffect('success');
     try {
       const allData = {
         worlds: JSON.parse(localStorage.getItem('fantasyWorldBuilder_worlds') || '[]'),
@@ -125,11 +133,13 @@ const Index = () => {
   };
 
   const handleHomeClick = () => {
+    playEffect('pageFlip');
     setActiveSection('dashboard');
     setViewingCharacter(null);
   };
 
   const handleViewCharacter = (character: Character) => {
+    playEffect('pageFlip');
     setViewingCharacter(character);
   };
 
@@ -139,6 +149,7 @@ const Index = () => {
 
   const handleSaveCharacter = (character: Character) => {
     // Оновити персонажа в localStorage через хук
+    playEffect('save');
     const updatedCharacter = {
       ...character,
       lastModified: new Date().toISOString()
@@ -151,6 +162,7 @@ const Index = () => {
   };
 
   const handleDeleteCharacterFromView = (characterId: string) => {
+    playEffect('delete');
     setCharacters(prev => prev.filter(char => char.id !== characterId));
   };
 
@@ -165,8 +177,6 @@ const Index = () => {
       background: 'var(--bg-primary)'
     }}>
       <Header
-        soundEnabled={soundEnabled}
-        onToggleSound={() => setSoundEnabled(!soundEnabled)}
         onSave={handleSave}
         onExport={handleExport}
         onHomeClick={handleHomeClick}
