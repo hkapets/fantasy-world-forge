@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Scenario } from '@/hooks/useScenariosData';
+import { TagInput } from '../Common/TagInput';
 
 interface CreateScenarioModalProps {
   isOpen: boolean;
@@ -330,68 +331,12 @@ export const CreateScenarioModal: React.FC<CreateScenarioModalProps> = ({
               Теги
             </label>
             
-            <div style={{
-              display: 'flex',
-              gap: '0.5rem',
-              marginBottom: '0.5rem'
-            }}>
-              <input
-                type="text"
-                className="input"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={handleTagInputKeyPress}
-                placeholder="Додати тег..."
-                style={{ flex: 1 }}
-              />
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={handleAddTag}
-              >
-                Додати
-              </button>
-            </div>
-
-            {formData.tags.length > 0 && (
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.5rem'
-              }}>
-                {formData.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.25rem',
-                      padding: '0.25rem 0.5rem',
-                      background: 'var(--bg-tertiary)',
-                      color: 'var(--text-secondary)',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.75rem'
-                    }}
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTag(tag)}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--text-muted)',
-                        cursor: 'pointer',
-                        padding: '0',
-                        marginLeft: '0.25rem'
-                      }}
-                    >
-                      <X size={12} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
+            <TagInput
+              tags={formData.tags}
+              onChange={(tags) => setFormData(prev => ({ ...prev, tags }))}
+              worldId="current" // TODO: передати правильний worldId
+              placeholder="Додати тег для сценарію..."
+            />
           </div>
 
           {/* Кнопки */}
