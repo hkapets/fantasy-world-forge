@@ -189,7 +189,7 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
               maxItems={4}
             />
           </div>
-        </div>
+        )}
 
         <div style={{
           display: 'flex',
