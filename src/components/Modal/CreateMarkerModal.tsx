@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { MapMarker } from '@/hooks/useMapsData';
 import { Modal } from './Modal';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface CreateMarkerModalProps {
   isOpen: boolean;
@@ -37,6 +38,12 @@ export const CreateMarkerModal: React.FC<CreateMarkerModalProps> = ({
   editingMarker,
   currentWorldId
 }) => {
+  const [characters] = useLocalStorage('fantasyWorldBuilder_characters', []);
+  const [loreItems] = useLocalStorage(`fantasyWorldBuilder_lore_${currentWorldId}`, []);
+  
+  // Фільтруємо персонажів поточного світу
+  const worldCharacters = characters.filter((char: any) => char.worldId === currentWorldId);
+  
   const [formData, setFormData] = useState({
     type: 'location' as 'location' | 'character' | 'event' | 'lore',
     entityId: '',
@@ -172,6 +179,40 @@ export const CreateMarkerModal: React.FC<CreateMarkerModalProps> = ({
                 ))}
               </select>
             </div>
+
+            {/* Швидкий вибір персонажа */}
+            {formData.type === 'character' && worldCharacters.length > 0 && (
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '0.875rem', 
+                  fontWeight: '500', 
+                  marginBottom: '0.5rem' 
+                }}>
+                  Швидкий вибір персонажа
+                </label>
+                <select
+                  className="input"
+                  value=""
+                  onChange={(e) => {
+                    const selectedChar = worldCharacters.find((char: any) => char.id === e.target.value);
+                    if (selectedChar) {
+                      handleInputChange('entityId', selectedChar.id);
+                      handleInputChange('entityName', selectedChar.name);
+                      handleInputChange('title', selectedChar.name);
+                      handleInputChange('description', `${selectedChar.status}${selectedChar.birthPlace ? ` • Народився: ${selectedChar.birthPlace}` : ''}`);
+                    }
+                  }}
+                >
+                  <option value="">Оберіть персонажа...</option>
+                  {worldCharacters.map((char: any) => (
+                    <option key={char.id} value={char.id}>
+                      {char.name} ({char.race} {char.characterClass})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Назва маркера */}
             <div>
