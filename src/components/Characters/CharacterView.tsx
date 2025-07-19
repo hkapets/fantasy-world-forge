@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Edit, Trash2, Save } from 'lucide-react';
+import { CharacterLocationSync } from './CharacterLocationSync';
 
 interface Character {
   id: string;
@@ -280,6 +281,17 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Інтеграція з картами */}
+      <div style={{ marginTop: '2rem' }}>
+        <CharacterLocationSync 
+          character={character}
+          onNavigateToMap={(mapId, markerId) => {
+            // TODO: Реалізувати навігацію до карти з фокусом на маркері
+            console.log('Navigate to map:', mapId, 'marker:', markerId);
+          }}
+        />
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { X, Plus, MapPin, Edit, Trash2, Eye, EyeOff, ZoomIn, ZoomOut, Maximize, RotateCcw, Move } from 'lucide-react';
 import { WorldMap, MapMarker, useMapsData } from '@/hooks/useMapsData';
 import { CreateMarkerModal } from '../Modal/CreateMarkerModal';
+import { useCharacterMapIntegration } from '@/hooks/useCharacterMapIntegration';
 
 interface MapViewProps {
   map: WorldMap;
@@ -11,6 +12,7 @@ interface MapViewProps {
 
 export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }) => {
   const { markers, addMarker, updateMarker, deleteMarker, getMarkersByMap } = useMapsData(currentWorldId);
+  const { syncCharacterMarkers, getCharacterColor } = useCharacterMapIntegration(currentWorldId);
   const [isAddingMarker, setIsAddingMarker] = useState(false);
   const [selectedMarker, setSelectedMarker] = useState<MapMarker | null>(null);
   const [isCreateMarkerModalOpen, setIsCreateMarkerModalOpen] = useState(false);
@@ -92,6 +94,8 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
   // Ініціалізуємо всі маркери як видимі
   useEffect(() => {
     setVisibleMarkers(new Set(mapMarkers.map(m => m.id)));
+    // Синхронізуємо маркери персонажів при відкритті карти
+    syncCharacterMarkers();
   }, [mapMarkers]);
 
   const handleMapClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -154,7 +158,13 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
   const getMarkerStyle = (marker: MapMarker) => {
     const isVisible = visibleMarkers.has(marker.id);
     const sizeMap = { small: 8, medium: 12, large: 16 };
-    const scaledSize = sizeMap[marker.size] * zoom;
+    
+    // Використовуємо розумний колір для персонажів
+    let markerColor = marker.color;
+    if (marker.type === 'character') {
+      // Можемо оновити колір на основі актуального статусу персонажа
+      markerColor = marker.color; // Поки що залишаємо як є
+    }
     
     return {
       position: 'absolute' as const,
@@ -163,7 +173,7 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
       transform: `translate(-50%, -50%) scale(${Math.max(0.5, Math.min(2, zoom))})`,
       width: `${sizeMap[marker.size]}px`,
       height: `${sizeMap[marker.size]}px`,
-      backgroundColor: marker.color,
+      backgroundColor: markerColor,
       borderRadius: '50%',
       border: '2px solid white',
       cursor: 'pointer',
@@ -347,7 +357,7 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
                         top: `${marker.y}%`,
                         width: '3px',
                         height: '3px',
-                        backgroundColor: marker.color,
+                        backgroundColor: marker.type === 'character' ? getCharacterColor(marker.description.split('•')[0]?.trim() || '') : marker.color,
                         borderRadius: '50%',
                         transform: 'translate(-50%, -50%)'
                       }}
@@ -463,7 +473,7 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
                             style={{
                               width: '12px',
                               height: '12px',
-                              backgroundColor: marker.color,
+                              backgroundColor: marker.type === 'character' ? getCharacterColor(marker.description.split('•')[0]?.trim() || '') : marker.color,
                               borderRadius: '50%',
                               border: '1px solid white',
                               boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
@@ -475,9 +485,21 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.25rem' }}>
                               {marker.title}
+                              {marker.type === 'character' && (
+                                <span style={{
+                                  fontSize: '0.75rem',
+                                  marginLeft: '0.5rem',
+                                  padding: '0.125rem 0.375rem',
+                                  background: 'var(--fantasy-primary)',
+                                  color: 'white',
+                                  borderRadius: 'var(--radius-sm)'
+                                }}>
+                                  Персонаж
+                                </span>
+                              )}
                             </div>
                             <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-                              {marker.type} • {marker.entityName}
+                              {marker.type === 'character' ? 'Персонаж' : marker.type} • {marker.entityName}
                             </div>
                             {marker.description && (
                               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>

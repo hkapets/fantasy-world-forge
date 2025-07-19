@@ -3,6 +3,7 @@ import { Plus, Search } from 'lucide-react';
 import { CharacterCard } from './CharacterCard';
 import { CreateCharacterModal } from '../Modal/CreateCharacterModal';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useCharacterMapIntegration } from '@/hooks/useCharacterMapIntegration';
 
 interface Character {
   id: string;
@@ -32,6 +33,7 @@ export const Characters: React.FC<CharactersProps> = ({
   onViewCharacter
 }) => {
   const { createAutoRelationships } = useTagsSystem(currentWorldId || '');
+  const { autoCreateCharacterMarkers, syncCharacterMarkers } = useCharacterMapIntegration(currentWorldId || '');
   const [characters, setCharacters] = useLocalStorage<Character[]>('fantasyWorldBuilder_characters', []);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
@@ -96,6 +98,11 @@ export const Characters: React.FC<CharactersProps> = ({
         characterData.tags
       );
     }
+
+    // Автоматично створюємо маркери на картах
+    setTimeout(() => {
+      autoCreateCharacterMarkers();
+    }, 100);
   };
 
   const handleEditCharacter = (characterData: Omit<Character, 'id' | 'worldId' | 'createdAt' | 'lastModified'>) => {
@@ -108,11 +115,22 @@ export const Characters: React.FC<CharactersProps> = ({
           : char
       )
     );
+    
+    // Синхронізуємо маркери після редагування
+    setTimeout(() => {
+      syncCharacterMarkers();
+    }, 100);
+    
     setEditingCharacter(null);
   };
 
   const handleDeleteCharacter = (characterId: string) => {
     setCharacters(prev => prev.filter(char => char.id !== characterId));
+    
+    // Маркери видаляться автоматично через syncCharacterMarkers
+    setTimeout(() => {
+      syncCharacterMarkers();
+    }, 100);
   };
 
   const openEditModal = (character: Character) => {
