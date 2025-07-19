@@ -8,7 +8,11 @@ interface CreateNoteModalProps {
   onClose: () => void;
   onSave: (noteData: Omit<Note, 'id' | 'worldId' | 'createdAt' | 'lastModified'>) => void;
   editingNote?: Note | null;
+  currentWorldId?: string;
 }
+
+import { TagInput } from '../Common/TagInput';
+import { RelatedEntities } from '../Common/RelatedEntities';
 
 const categories = [
   { value: 'ideas', label: 'Ідеї' },
@@ -23,7 +27,8 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  editingNote
+  editingNote,
+  currentWorldId
 }) => {
   const [formData, setFormData] = useState({
     title: '',
@@ -164,19 +169,25 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
           }}>
             Теги
           </label>
-          <input
-            type="text"
-            className="input"
-            value={formData.tags}
-            onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-            placeholder="Введіть теги через кому..."
-          />
-          <div style={{
-            fontSize: '0.75rem',
-            color: 'var(--text-muted)',
-            marginTop: '0.25rem'
-          }}>
-            Розділяйте теги комами (наприклад: магія, драконі, битва)
+          {currentWorldId && (
+            <TagInput
+              tags={formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)}
+              onChange={(tags) => setFormData(prev => ({ ...prev, tags: tags.join(', ') }))}
+              worldId={currentWorldId}
+              placeholder="Додати тег для нотатки..."
+            />
+          )}
+        </div>
+
+        {/* Пов'язані елементи */}
+        {formData.tags && currentWorldId && (
+          <div style={{ marginBottom: '1.5rem' }}>
+            <RelatedEntities
+              entityId={editingNote?.id || 'new'}
+              entityTags={formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)}
+              worldId={currentWorldId}
+              maxItems={4}
+            />
           </div>
         </div>
 

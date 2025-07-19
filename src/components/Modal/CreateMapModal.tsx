@@ -11,6 +11,9 @@ interface CreateMapModalProps {
   currentWorldId: string;
 }
 
+import { TagInput } from '../Common/TagInput';
+import { RelatedEntities } from '../Common/RelatedEntities';
+
 const placeholderImages = [
   'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=300&fit=crop',
   'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop', 
@@ -391,67 +394,12 @@ export const CreateMapModal: React.FC<CreateMapModalProps> = ({
             Теги
           </label>
           
-          {/* Поточні теги */}
-          {formData.tags.length > 0 && (
-            <div style={{ 
-              display: 'flex', 
-              flexWrap: 'wrap', 
-              gap: '0.5rem',
-              marginBottom: '0.5rem'
-            }}>
-              {formData.tags.map(tag => (
-                <span 
-                  key={tag}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.25rem',
-                    padding: '0.25rem 0.5rem',
-                    background: 'var(--fantasy-primary-subtle)',
-                    color: 'var(--fantasy-primary)',
-                    borderRadius: '0.25rem',
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag(tag)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      cursor: 'pointer',
-                      padding: 0,
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <X size={12} />
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input
-              type="text"
-              className="input"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Додати тег..."
-              style={{ flex: 1 }}
-            />
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={handleAddTag}
-            >
-              Додати
-            </button>
-          </div>
+          <TagInput
+            tags={formData.tags}
+            onChange={(tags) => setFormData(prev => ({ ...prev, tags }))}
+            worldId={currentWorldId}
+            placeholder="Додати тег для карти..."
+          />
         </div>
 
         {/* Публічність */}

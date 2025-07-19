@@ -17,6 +17,7 @@ interface Character {
   relatives: string;
   characterClass: string;
   description: string;
+  tags?: string[];
   createdAt: string;
   lastModified: string;
 }
@@ -30,6 +31,7 @@ export const Characters: React.FC<CharactersProps> = ({
   currentWorldId,
   onViewCharacter
 }) => {
+  const { createAutoRelationships } = useTagsSystem(currentWorldId || '');
   const [characters, setCharacters] = useLocalStorage<Character[]>('fantasyWorldBuilder_characters', []);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
@@ -84,6 +86,16 @@ export const Characters: React.FC<CharactersProps> = ({
     };
 
     setCharacters(prev => [...prev, newCharacter]);
+
+    // Створюємо автоматичні зв'язки на основі тегів
+    if (characterData.tags && characterData.tags.length > 0) {
+      createAutoRelationships(
+        newCharacter.id,
+        'character',
+        newCharacter.name,
+        characterData.tags
+      );
+    }
   };
 
   const handleEditCharacter = (characterData: Omit<Character, 'id' | 'worldId' | 'createdAt' | 'lastModified'>) => {
@@ -269,7 +281,10 @@ export const Characters: React.FC<CharactersProps> = ({
         }}
         onSave={editingCharacter ? handleEditCharacter : handleCreateCharacter}
         editingCharacter={editingCharacter}
+        currentWorldId={currentWorldId}
       />
     </div>
   );
 };
+
+import { useTagsSystem } from '@/hooks/useTagsSystem';

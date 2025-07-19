@@ -276,6 +276,7 @@ export const Notes: React.FC<NotesProps> = ({ currentWorldId }) => {
         }}
         onSave={editingNote ? handleEditNote : handleCreateNote}
         editingNote={editingNote}
+        currentWorldId={currentWorldId}
       />
     </div>
   );

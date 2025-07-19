@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Modal } from './Modal';
 
+import { TagInput } from '../Common/TagInput';
+import { RelatedEntities } from '../Common/RelatedEntities';
+import { useTagsSystem } from '@/hooks/useTagsSystem';
+
 interface Character {
   id: string;
   worldId: string;
@@ -14,6 +18,7 @@ interface Character {
   relatives: string;
   characterClass: string;
   description: string;
+  tags?: string[];
   createdAt: string;
   lastModified: string;
 }
@@ -23,14 +28,18 @@ interface CreateCharacterModalProps {
   onClose: () => void;
   onSave: (character: Omit<Character, 'id' | 'worldId' | 'createdAt' | 'lastModified'>) => void;
   editingCharacter?: Character | null;
+  currentWorldId?: string;
 }
 
 export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  editingCharacter
+  editingCharacter,
+  currentWorldId
 }) => {
+  const { createAutoRelationships } = useTagsSystem(currentWorldId || '');
+
   const [formData, setFormData] = useState({
     image: editingCharacter?.image || '',
     name: editingCharacter?.name || '',
@@ -41,7 +50,8 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
     status: editingCharacter?.status || '',
     relatives: editingCharacter?.relatives || '',
     characterClass: editingCharacter?.characterClass || '',
-    description: editingCharacter?.description || ''
+    description: editingCharacter?.description || '',
+    tags: editingCharacter?.tags || []
   });
 
   const handleChange = (field: string, value: string) => {
@@ -80,7 +90,8 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
         status: '',
         relatives: '',
         characterClass: '',
-        description: ''
+        description: '',
+        tags: []
       });
     }
     onClose();
@@ -98,7 +109,8 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
         status: '',
         relatives: '',
         characterClass: '',
-        description: ''
+        description: '',
+        tags: []
       });
     } else {
       setFormData({
@@ -111,7 +123,8 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
         status: editingCharacter.status,
         relatives: editingCharacter.relatives,
         characterClass: editingCharacter.characterClass,
-        description: editingCharacter.description
+        description: editingCharacter.description,
+        tags: editingCharacter.tags || []
       });
     }
     onClose();
@@ -360,6 +373,39 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
             }}
           />
         </div>
+
+        {/* Теги */}
+        <div>
+          <label style={{
+            display: 'block',
+            fontSize: '0.875rem',
+            fontWeight: '500',
+            marginBottom: '0.5rem',
+            color: 'var(--text-primary)'
+          }}>
+            Теги
+          </label>
+          {currentWorldId && (
+            <TagInput
+              tags={formData.tags}
+              onChange={(tags) => handleChange('tags', tags)}
+              worldId={currentWorldId}
+              placeholder="Додати тег для персонажа..."
+            />
+          )}
+        </div>
+
+        {/* Пов'язані елементи */}
+        {formData.tags.length > 0 && currentWorldId && (
+          <div>
+            <RelatedEntities
+              entityId={editingCharacter?.id || 'new'}
+              entityTags={formData.tags}
+              worldId={currentWorldId}
+              maxItems={4}
+            />
+          </div>
+        )}
 
         <div style={{
           fontSize: '0.75rem',
