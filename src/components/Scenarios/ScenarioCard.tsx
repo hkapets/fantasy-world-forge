@@ -1,12 +1,14 @@
 import React from 'react';
 import { Edit, Trash2, Users, Clock, Star } from 'lucide-react';
 import { Scenario } from '@/hooks/useScenariosData';
+import { EntityTooltip } from '../Common/EntityTooltip';
 
 interface ScenarioCardProps {
   scenario: Scenario;
   onClick?: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  showTooltip?: boolean;
 }
 
 const typeLabels = {
@@ -41,7 +43,8 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   scenario,
   onClick,
   onEdit,
-  onDelete
+  onDelete,
+  showTooltip = true
 }) => {
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -55,7 +58,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
     onEdit();
   };
 
-  return (
+  const cardContent = (
     <div 
       className="card"
       style={{
@@ -244,5 +247,17 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
       )}
 
     </div>
+  );
+
+  return showTooltip ? (
+    <EntityTooltip
+      entityType="scenario"
+      entityId={scenario.id}
+      worldId={scenario.worldId}
+    >
+      {cardContent}
+    </EntityTooltip>
+  ) : (
+    cardContent
   );
 };

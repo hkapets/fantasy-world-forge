@@ -1,6 +1,7 @@
 import React from 'react';
 import { Map, MapPin, Eye, Edit, Trash2, Globe } from 'lucide-react';
 import { WorldMap, MapMarker } from '@/hooks/useMapsData';
+import { EntityTooltip } from '../Common/EntityTooltip';
 
 interface MapCardProps {
   map: WorldMap;
@@ -8,6 +9,7 @@ interface MapCardProps {
   onView: (map: WorldMap) => void;
   onEdit: (map: WorldMap) => void;
   onDelete: (mapId: string) => void;
+  showTooltip?: boolean;
 }
 
 export const MapCard: React.FC<MapCardProps> = ({
@@ -15,7 +17,8 @@ export const MapCard: React.FC<MapCardProps> = ({
   markers,
   onView,
   onEdit,
-  onDelete
+  onDelete,
+  showTooltip = true
 }) => {
   const handleDeleteClick = () => {
     if (confirm('Видалити карту? Це також видалить всі маркери на ній.')) {
@@ -23,7 +26,7 @@ export const MapCard: React.FC<MapCardProps> = ({
     }
   };
 
-  return (
+  const cardContent = (
     <div 
       className="card hover-scale animate-fade-in" 
       style={{ 
@@ -233,5 +236,17 @@ export const MapCard: React.FC<MapCardProps> = ({
         </button>
       </div>
     </div>
+  );
+
+  return showTooltip ? (
+    <EntityTooltip
+      entityType="map"
+      entityId={map.id}
+      worldId={map.worldId}
+    >
+      {cardContent}
+    </EntityTooltip>
+  ) : (
+    cardContent
   );
 };
