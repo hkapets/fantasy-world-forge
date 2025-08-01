@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapPin, Users, Calendar, Zap } from 'lucide-react';
+import { EntityTooltip } from '../Common/EntityTooltip';
 
 interface LoreItem {
   id: string;
@@ -18,6 +19,7 @@ interface LoreItem {
 interface LoreCardProps {
   item: LoreItem;
   onClick: () => void;
+  showTooltip?: boolean;
 }
 
 const typeColors: Record<string, string> = {
@@ -41,6 +43,11 @@ const dangerLevelColors: Record<string, string> = {
 };
 
 export const LoreCard: React.FC<LoreCardProps> = ({ item, onClick }) => {
+export const LoreCard: React.FC<LoreCardProps> = ({ 
+  item, 
+  onClick, 
+  showTooltip = true 
+}) => {
   const typeColor = typeColors[item.type] || 'var(--fantasy-primary)';
 
   const renderIcon = () => {
@@ -123,7 +130,7 @@ export const LoreCard: React.FC<LoreCardProps> = ({ item, onClick }) => {
     return null;
   };
 
-  return (
+  const cardContent = (
     <div
       className="card card-hover"
       onClick={onClick}
@@ -209,5 +216,17 @@ export const LoreCard: React.FC<LoreCardProps> = ({ item, onClick }) => {
         </div>
       </div>
     </div>
+  );
+
+  return showTooltip ? (
+    <EntityTooltip
+      entityType="lore"
+      entityId={item.id}
+      worldId={item.worldId || 'current'}
+    >
+      {cardContent}
+    </EntityTooltip>
+  ) : (
+    cardContent
   );
 };

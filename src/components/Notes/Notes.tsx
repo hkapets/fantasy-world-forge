@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Search, Filter, Edit, Trash2 } from 'lucide-react';
 import { CreateNoteModal } from '../Modal/CreateNoteModal';
 import { useNotesData, Note } from '@/hooks/useNotesData';
+import { EntityTooltip } from '../Common/EntityTooltip';
 
 interface NotesProps {
   currentWorldId: string | null;
@@ -173,97 +174,110 @@ export const Notes: React.FC<NotesProps> = ({ currentWorldId }) => {
           gap: '1.5rem'
         }}>
           {filteredNotes.map(note => (
-            <div key={note.id} className="card" style={{ padding: '1.5rem' }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: '1rem'
-              }}>
-                <h3 style={{
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  color: 'var(--text-primary)',
-                  margin: 0,
-                  flex: 1,
-                  marginRight: '1rem'
-                }}>
-                  {note.title}
-                </h3>
-                
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button
-                    className="btn-icon btn-icon-sm"
-                    onClick={() => openEditModal(note)}
-                  >
-                    <Edit size={14} />
-                  </button>
-                  <button
-                    className="btn-icon btn-icon-sm"
-                    onClick={() => handleDeleteNote(note.id)}
-                    style={{ background: 'var(--danger)', color: 'white' }}
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </div>
-
-              <div style={{
-                fontSize: '0.75rem',
-                fontWeight: '600',
-                color: 'var(--fantasy-primary)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: '0.75rem'
-              }}>
-                {categories.find(c => c.value === note.category)?.label || 'Інше'}
-              </div>
-
-              <p style={{
-                fontSize: '0.875rem',
-                color: 'var(--text-secondary)',
-                lineHeight: '1.5',
-                marginBottom: '1rem',
-                overflow: 'hidden',
-                display: '-webkit-box',
-                WebkitLineClamp: 4,
-                WebkitBoxOrient: 'vertical'
-              }}>
-                {note.content}
-              </p>
-
-              {note.tags.length > 0 && (
+            <EntityTooltip
+              key={note.id}
+              entityType="note"
+              entityId={note.id}
+              worldId={currentWorldId}
+            >
+              <div className="card" style={{ padding: '1.5rem', cursor: 'pointer' }}>
                 <div style={{
                   display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '0.5rem',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
                   marginBottom: '1rem'
                 }}>
-                  {note.tags.map(tag => (
-                    <span
-                      key={tag}
-                      style={{
-                        fontSize: '0.75rem',
-                        padding: '0.25rem 0.5rem',
-                        background: 'var(--bg-secondary)',
-                        color: 'var(--text-muted)',
-                        borderRadius: 'var(--radius-sm)',
-                        border: '1px solid var(--border-primary)'
+                  <h3 style={{
+                    fontSize: '1.125rem',
+                    fontWeight: '600',
+                    color: 'var(--text-primary)',
+                    margin: 0,
+                    flex: 1,
+                    marginRight: '1rem'
+                  }}>
+                    {note.title}
+                  </h3>
+                  
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      className="btn-icon btn-icon-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEditModal(note);
                       }}
                     >
-                      #{tag}
-                    </span>
-                  ))}
+                      <Edit size={14} />
+                    </button>
+                    <button
+                      className="btn-icon btn-icon-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteNote(note.id);
+                      }}
+                      style={{ background: 'var(--danger)', color: 'white' }}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
-              )}
 
-              <div style={{
-                fontSize: '0.75rem',
-                color: 'var(--text-muted)'
-              }}>
-                Створено {new Date(note.createdAt).toLocaleDateString('uk-UA')}
+                <div style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: 'var(--fantasy-primary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '0.75rem'
+                }}>
+                  {categories.find(c => c.value === note.category)?.label || 'Інше'}
+                </div>
+
+                <p style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--text-secondary)',
+                  lineHeight: '1.5',
+                  marginBottom: '1rem',
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 4,
+                  WebkitBoxOrient: 'vertical'
+                }}>
+                  {note.content}
+                </p>
+
+                {note.tags.length > 0 && (
+                  <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem',
+                    marginBottom: '1rem'
+                  }}>
+                    {note.tags.map(tag => (
+                      <span
+                        key={tag}
+                        style={{
+                          fontSize: '0.75rem',
+                          padding: '0.25rem 0.5rem',
+                          background: 'var(--bg-secondary)',
+                          color: 'var(--text-muted)',
+                          borderRadius: 'var(--radius-sm)',
+                          border: '1px solid var(--border-primary)'
+                        }}
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div style={{
+                  fontSize: '0.75rem',
+                  color: 'var(--text-muted)'
+                }}>
+                  Створено {new Date(note.createdAt).toLocaleDateString('uk-UA')}
+                </div>
               </div>
-            </div>
+            </EntityTooltip>
           ))}
         </div>
       )}

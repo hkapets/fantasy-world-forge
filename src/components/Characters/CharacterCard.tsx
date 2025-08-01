@@ -1,5 +1,6 @@
 import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
+import { EntityTooltip } from '../Common/EntityTooltip';
 
 interface Character {
   id: string;
@@ -23,13 +24,15 @@ interface CharacterCardProps {
   onClick: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  showTooltip?: boolean;
 }
 
 export const CharacterCard: React.FC<CharacterCardProps> = ({
   character,
   onClick,
   onEdit,
-  onDelete
+  onDelete,
+  showTooltip = true
 }) => {
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -43,7 +46,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
     }
   };
 
-  return (
+  const cardContent = (
     <div
       className="card"
       style={{
@@ -202,5 +205,17 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
         </div>
       </div>
     </div>
+  );
+
+  return showTooltip ? (
+    <EntityTooltip
+      entityType="character"
+      entityId={character.id}
+      worldId={character.worldId}
+    >
+      {cardContent}
+    </EntityTooltip>
+  ) : (
+    cardContent
   );
 };

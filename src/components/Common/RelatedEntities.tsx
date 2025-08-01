@@ -1,6 +1,7 @@
 import React from 'react';
 import { Users, BookOpen, Clock, MapPin, FileText, Film, ExternalLink } from 'lucide-react';
 import { useTagsSystem, TaggedEntity } from '@/hooks/useTagsSystem';
+import { EntityLink } from './EntityLink';
 
 interface RelatedEntitiesProps {
   entityId: string;
@@ -156,57 +157,50 @@ export const RelatedEntities: React.FC<RelatedEntitiesProps> = ({
                         transition: 'all 0.2s ease'
                       }}
                       onMouseEnter={(e) => {
-                        if (onNavigate) {
-                          e.currentTarget.style.background = 'var(--bg-tertiary)';
-                          e.currentTarget.style.borderColor = color;
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (onNavigate) {
-                          e.currentTarget.style.background = 'var(--bg-secondary)';
-                          e.currentTarget.style.borderColor = 'var(--border-primary)';
-                        }
-                      }}
-                    >
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: '0.25rem'
-                      }}>
-                        <span style={{
-                          fontSize: '0.875rem',
-                          fontWeight: '500',
-                          color: 'var(--text-primary)'
-                        }}>
-                          {entity.name}
-                        </span>
-                        
-                        {onNavigate && (
-                          <ExternalLink size={12} style={{ color: 'var(--text-muted)' }} />
-                        )}
-                      </div>
-
                       {commonTags.length > 0 && (
-                        <div style={{
-                          display: 'flex',
-                          flexWrap: 'wrap',
-                          gap: '0.25rem'
-                        }}>
-                          {commonTags.map(tag => (
-                            <span
-                              key={tag}
-                              style={{
-                                fontSize: '0.625rem',
-                                padding: '0.125rem 0.375rem',
-                                background: color,
-                                color: 'white',
-                                borderRadius: 'var(--radius-sm)',
-                                fontWeight: '500'
-                              }}
+                              >
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  marginBottom: '0.25rem'
+                                }}>
+                                  <span style={{
+                                    fontSize: '0.875rem',
+                                    fontWeight: '500',
+                                    color: 'var(--text-primary)'
+                                  }}>
+                                    {entity.name}
+                                  </span>
+                                  
+                                  <ExternalLink size={12} style={{ color: 'var(--text-muted)' }} />
                             >
-                              {tag}
-                            </span>
+
+                                {commonTags.length > 0 && (
+                                  <div style={{
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    gap: '0.25rem'
+                                  }}>
+                                    {commonTags.map(tag => (
+                                      <span
+                                        key={tag}
+                                        style={{
+                                          fontSize: '0.625rem',
+                                          padding: '0.125rem 0.375rem',
+                                          background: color,
+                                          color: 'white',
+                                          borderRadius: 'var(--radius-sm)',
+                                          fontWeight: '500'
+                                        }}
+                                      >
+                                        {tag}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </EntityLink>
                           ))}
                         </div>
                       )}

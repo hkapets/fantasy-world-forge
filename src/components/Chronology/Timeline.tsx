@@ -272,6 +272,10 @@ export const Timeline: React.FC<TimelineProps> = ({
                   }}
                   onEdit={() => openEditEventModal(event)}
                   onDelete={() => handleDeleteEvent(event.id)}
+                  onNavigate={(entityType, entityId) => {
+                    // TODO: Implement navigation to specific entity
+                    console.log('Navigate to:', entityType, entityId);
+                  }}
                 />
               );
             });

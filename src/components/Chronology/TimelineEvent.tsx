@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Edit, Trash2, Calendar, MapPin, Users } from 'lucide-react';
 import { ChronologyEvent } from '@/hooks/useChronologyData';
+import { EntityLink } from '../Common/EntityLink';
 
 interface TimelineEventProps {
   event: ChronologyEvent;
   style?: React.CSSProperties;
   onEdit: () => void;
   onDelete: () => void;
+  onNavigate?: (entityType: string, entityId: string) => void;
 }
 
 const eventTypeColors: { [key: string]: string } = {
@@ -29,9 +31,11 @@ export const TimelineEvent: React.FC<TimelineEventProps> = ({
   event,
   style,
   onEdit,
-  onDelete
+  onDelete,
+  onNavigate
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showExtendedInfo, setShowExtendedInfo] = useState(false);
 
   const typeColor = eventTypeColors[event.type] || eventTypeColors.other;
 
@@ -127,6 +131,97 @@ export const TimelineEvent: React.FC<TimelineEventProps> = ({
           {event.description}
         </p>
 
+        {/* Tags */}
+        {event.tags && event.tags.length > 0 && (
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.25rem',
+            marginTop: '0.5rem'
+          }}>
+            {event.tags.slice(0, 2).map((tag, index) => (
+              <span
+                key={index}
+                style={{
+                  fontSize: '0.625rem',
+                  padding: '0.125rem 0.375rem',
+                  background: typeColor,
+                  color: 'white',
+                  borderRadius: 'var(--radius-sm)',
+                  fontWeight: '500'
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+            {event.tags.length > 2 && (
+              <span style={{
+                fontSize: '0.625rem',
+                padding: '0.125rem 0.375rem',
+                background: 'var(--bg-tertiary)',
+                color: 'var(--text-muted)',
+                borderRadius: 'var(--radius-sm)'
+              }}>
+                +{event.tags.length - 2}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Related characters as links */}
+        {event.relatedCharacterIds && event.relatedCharacterIds.length > 0 && (
+          <div style={{
+            marginTop: '0.5rem',
+            fontSize: '0.75rem'
+          }}>
+            <div style={{
+              color: 'var(--text-muted)',
+              marginBottom: '0.25rem',
+              fontWeight: '500'
+            }}>
+              Персонажі:
+            </div>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.25rem'
+            }}>
+              {event.relatedCharacterIds.slice(0, 2).map((charId, index) => {
+                const charName = event.relatedCharacterNames?.[index] || `Персонаж ${index + 1}`;
+                return (
+                  <EntityLink
+                    key={charId}
+                    entityType="character"
+                    entityId={charId}
+                    entityName={charName}
+                    worldId={event.chronologyId} // Використовуємо як worldId
+                    onNavigate={onNavigate}
+                    style={{
+                      fontSize: '0.625rem',
+                      padding: '0.125rem 0.375rem',
+                      background: 'var(--fantasy-primary)',
+                      color: 'white',
+                      borderRadius: 'var(--radius-sm)',
+                      textDecoration: 'none',
+                      display: 'inline-block'
+                    }}
+                  />
+                );
+              })}
+              {event.relatedCharacterIds.length > 2 && (
+                <span style={{
+                  fontSize: '0.625rem',
+                  padding: '0.125rem 0.375rem',
+                  background: 'var(--bg-tertiary)',
+                  color: 'var(--text-muted)',
+                  borderRadius: 'var(--radius-sm)'
+                }}>
+                  +{event.relatedCharacterIds.length - 2}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
         {/* Action buttons */}
         <div style={{
           display: 'flex',
@@ -159,7 +254,7 @@ export const TimelineEvent: React.FC<TimelineEventProps> = ({
       </div>
 
       {/* Tooltip */}
-      {showTooltip && (event.relatedLocations || event.relatedCharacters) && (
+      {showTooltip && (event.relatedLocations || event.relatedCharacters || (event.tags && event.tags.length > 2)) && (
         <div style={{
           position: 'absolute',
           top: '-10px',
@@ -174,6 +269,41 @@ export const TimelineEvent: React.FC<TimelineEventProps> = ({
           zIndex: 1000,
           fontSize: '0.75rem'
         }}>
+          {/* All tags */}
+          {event.tags && event.tags.length > 2 && (
+            <div style={{ marginBottom: '0.5rem' }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                marginBottom: '0.25rem',
+                color: 'var(--text-secondary)'
+              }}>
+                Всі теги:
+              </div>
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '0.25rem'
+              }}>
+                {event.tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    style={{
+                      fontSize: '0.625rem',
+                      padding: '0.125rem 0.375rem',
+                      background: typeColor,
+                      color: 'white',
+                      borderRadius: 'var(--radius-sm)',
+                      fontWeight: '500'
+                    }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
           {event.relatedLocations && (
             <div style={{ marginBottom: '0.5rem' }}>
               <div style={{ 
