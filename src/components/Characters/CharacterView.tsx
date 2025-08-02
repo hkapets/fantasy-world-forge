@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Edit, Trash2, Save } from 'lucide-react';
 import { CharacterLocationSync } from './CharacterLocationSync';
+import { QuickLinksPanel } from '../Common/QuickLinksPanel';
+import { RelationshipNetwork } from '../Common/RelationshipNetwork';
 
 interface Character {
   id: string;
@@ -36,6 +38,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedCharacter, setEditedCharacter] = useState<Character>(character);
+  const [showQuickLinks, setShowQuickLinks] = useState(true);
 
   const handleSave = () => {
     onSave(editedCharacter);
@@ -293,6 +296,43 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
           }}
         />
       </div>
+
+      {/* Мережа зв'язків */}
+      <div style={{ marginTop: '2rem' }}>
+        <div className="card" style={{ padding: '1.5rem' }}>
+          <h3 style={{
+            fontSize: '1.25rem',
+            fontWeight: '600',
+            marginBottom: '1rem',
+            color: 'var(--text-primary)'
+          }}>
+            Мережа зв'язків
+          </h3>
+          
+          <RelationshipNetwork
+            entityId={character.id}
+            entityType="character"
+            worldId={character.worldId}
+            onNavigate={(entityType, entityId) => {
+              console.log('Navigate to:', entityType, entityId);
+            }}
+            width={700}
+            height={400}
+          />
+        </div>
+      </div>
+
+      {/* Панель швидких зв'язків */}
+      <QuickLinksPanel
+        entityId={character.id}
+        entityType="character"
+        entityName={character.name}
+        worldId={character.worldId}
+        onNavigate={(entityType, entityId) => {
+          console.log('Navigate to:', entityType, entityId);
+        }}
+        isCollapsed={!showQuickLinks}
+      />
     </div>
   );
 };

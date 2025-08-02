@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Edit, Trash2, Save, X } from 'lucide-react';
+import { QuickLinksPanel } from '../Common/QuickLinksPanel';
+import { RelationshipNetwork } from '../Common/RelationshipNetwork';
 
 interface LoreItemViewProps {
   item: any;
@@ -242,6 +244,42 @@ export const LoreItemView: React.FC<LoreItemViewProps> = ({
           )}
         </div>
       </div>
+
+      {/* Мережа зв'язків */}
+      <div style={{ marginTop: '2rem' }}>
+        <div className="card" style={{ padding: '1.5rem' }}>
+          <h3 style={{
+            fontSize: '1.25rem',
+            fontWeight: '600',
+            marginBottom: '1rem',
+            color: 'var(--text-primary)'
+          }}>
+            Мережа зв'язків
+          </h3>
+          
+          <RelationshipNetwork
+            entityId={item.id}
+            entityType="lore"
+            worldId={item.worldId}
+            onNavigate={(entityType, entityId) => {
+              console.log('Navigate to:', entityType, entityId);
+            }}
+            width={700}
+            height={400}
+          />
+        </div>
+      </div>
+
+      {/* Панель швидких зв'язків */}
+      <QuickLinksPanel
+        entityId={item.id}
+        entityType="lore"
+        entityName={item.name}
+        worldId={item.worldId}
+        onNavigate={(entityType, entityId) => {
+          console.log('Navigate to:', entityType, entityId);
+        }}
+      />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { X, Plus, MapPin, Edit, Trash2, Eye, EyeOff, ZoomIn, ZoomOut, Maximize, 
 import { WorldMap, MapMarker, useMapsData } from '@/hooks/useMapsData';
 import { CreateMarkerModal } from '../Modal/CreateMarkerModal';
 import { useCharacterMapIntegration } from '@/hooks/useCharacterMapIntegration';
+import { QuickLinksPanel } from '../Common/QuickLinksPanel';
 
 interface MapViewProps {
   map: WorldMap;
@@ -561,6 +562,17 @@ export const MapView: React.FC<MapViewProps> = ({ map, onClose, currentWorldId }
         onSave={editingMarker ? handleEditMarker : handleCreateMarker}
         editingMarker={editingMarker}
         currentWorldId={currentWorldId}
+      />
+
+      {/* Панель швидких зв'язків */}
+      <QuickLinksPanel
+        entityId={map.id}
+        entityType="map"
+        entityName={map.name}
+        worldId={currentWorldId}
+        onNavigate={(entityType, entityId) => {
+          console.log('Navigate to:', entityType, entityId);
+        }}
       />
     </div>
   );

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ArrowLeft, Edit, Trash2, Clock, Users, Star, Calendar, Tag } from 'lucide-react';
 import { Scenario } from '@/hooks/useScenariosData';
 import { CreateScenarioModal } from '../Modal/CreateScenarioModal';
+import { QuickLinksPanel } from '../Common/QuickLinksPanel';
+import { RelationshipNetwork } from '../Common/RelationshipNetwork';
 
 interface ScenarioViewProps {
   scenario: Scenario;
@@ -373,12 +375,49 @@ export const ScenarioView: React.FC<ScenarioViewProps> = ({
         </p>
       </div>
 
+      {/* Мережа зв'язків */}
+      <div className="card" style={{
+        padding: '2rem',
+        marginTop: '2rem'
+      }}>
+        <h3 style={{
+          fontSize: '1.25rem',
+          fontWeight: '600',
+          color: 'var(--text-primary)',
+          marginBottom: '1rem'
+        }}>
+          🕸️ Мережа зв'язків
+        </h3>
+        
+        <RelationshipNetwork
+          entityId={scenario.id}
+          entityType="scenario"
+          worldId={scenario.worldId}
+          onNavigate={(entityType, entityId) => {
+            console.log('Navigate to:', entityType, entityId);
+          }}
+          width={800}
+          height={500}
+        />
+      </div>
+
       {/* Модальне вікно редагування */}
       <CreateScenarioModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleSaveEdit}
         editingScenario={scenario}
+      />
+
+      {/* Панель швидких зв'язків */}
+      <QuickLinksPanel
+        entityId={scenario.id}
+        entityType="scenario"
+        entityName={scenario.title}
+        worldId={scenario.worldId}
+        onNavigate={(entityType, entityId) => {
+          console.log('Navigate to:', entityType, entityId);
+        }}
       />
     </div>
   );
