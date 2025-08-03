@@ -4,6 +4,7 @@ import { Scenario } from '@/hooks/useScenariosData';
 import { CreateScenarioModal } from '../Modal/CreateScenarioModal';
 import { QuickLinksPanel } from '../Common/QuickLinksPanel';
 import { RelationshipNetwork } from '../Common/RelationshipNetwork';
+import { SmartSuggestions } from '../Common/SmartSuggestions';
 
 interface ScenarioViewProps {
   scenario: Scenario;
@@ -75,6 +76,14 @@ export const ScenarioView: React.FC<ScenarioViewProps> = ({
 
   return (
     <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
+      {/* Розумні пропозиції */}
+      <SmartSuggestions
+        entityId={scenario.id}
+        entityType="scenario"
+        worldId={scenario.worldId}
+        maxSuggestions={2}
+      />
+
       {/* Навігація */}
       <div style={{
         display: 'flex',

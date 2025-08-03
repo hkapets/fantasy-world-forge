@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
+import { SmartRecommendations } from './SmartRecommendations';
 
 interface World {
   id: string;
@@ -208,25 +209,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
         ))}
       </div>
 
-      {selectedWorld && (
+      {selectedWorld && worlds.length > 0 && (
         <div style={{
-          marginTop: '2rem',
-          padding: '2rem',
-          background: 'var(--bg-card)',
-          borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--border-primary)'
+          marginTop: '2rem'
         }}>
-          <h2 style={{
-            fontSize: '1.5rem',
-            fontWeight: '600',
-            marginBottom: '1rem',
-            color: 'var(--text-primary)'
-          }}>
-            Останні зміни
-          </h2>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            Тут будуть відображатися останні зміни у вибраному світі...
-          </p>
+          <SmartRecommendations 
+            worldId={selectedWorld}
+            onNavigate={(section, subsection, itemId) => {
+              console.log('Navigate to:', section, subsection, itemId);
+            }}
+          />
         </div>
       )}
     </div>

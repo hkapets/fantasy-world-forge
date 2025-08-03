@@ -3,6 +3,7 @@ import { Plus, Search, Filter, Edit, Trash2 } from 'lucide-react';
 import { CreateNoteModal } from '../Modal/CreateNoteModal';
 import { useNotesData, Note } from '@/hooks/useNotesData';
 import { EntityTooltip } from '../Common/EntityTooltip';
+import { SmartSuggestions } from '../Common/SmartSuggestions';
 
 interface NotesProps {
   currentWorldId: string | null;

@@ -3,6 +3,7 @@ import { ArrowLeft, Edit, Trash2, Save } from 'lucide-react';
 import { CharacterLocationSync } from './CharacterLocationSync';
 import { QuickLinksPanel } from '../Common/QuickLinksPanel';
 import { RelationshipNetwork } from '../Common/RelationshipNetwork';
+import { SmartSuggestions } from '../Common/SmartSuggestions';
 
 interface Character {
   id: string;
@@ -112,6 +113,14 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 
   return (
     <div style={{ padding: '2rem' }}>
+      {/* Розумні пропозиції */}
+      <SmartSuggestions
+        entityId={character.id}
+        entityType="character"
+        worldId={character.worldId}
+        maxSuggestions={2}
+      />
+
       {/* Хедер */}
       <div style={{
         display: 'flex',

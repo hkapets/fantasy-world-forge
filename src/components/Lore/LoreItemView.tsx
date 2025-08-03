@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Edit, Trash2, Save, X } from 'lucide-react';
 import { QuickLinksPanel } from '../Common/QuickLinksPanel';
 import { RelationshipNetwork } from '../Common/RelationshipNetwork';
+import { SmartSuggestions } from '../Common/SmartSuggestions';
 
 interface LoreItemViewProps {
   item: any;
@@ -42,6 +43,14 @@ export const LoreItemView: React.FC<LoreItemViewProps> = ({
 
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      {/* Розумні пропозиції */}
+      <SmartSuggestions
+        entityId={item.id}
+        entityType="lore"
+        worldId={item.worldId}
+        maxSuggestions={2}
+      />
+
       {/* Header */}
       <div style={{ 
         display: 'flex', 
