@@ -71,9 +71,34 @@ const Index = () => {
   const handleNavigate = (section: string, subsection?: string, itemId?: string) => {
     playEffect('pageFlip');
     setActiveSection(section);
-    // Тут можна додати логіку для навігації до конкретного елемента
-    // Наприклад, встановити ID елемента для відкриття
-    console.log('Navigate to:', { section, subsection, itemId });
+    
+    // Навігація до конкретного елемента
+    if (itemId) {
+      switch (section) {
+        case 'characters':
+          // Знаходимо персонажа та відкриваємо його
+          const character = characters.find(char => char.id === itemId);
+          if (character) {
+            setViewingCharacter(character);
+          }
+          break;
+        case 'lore':
+          // Переходимо до підрозділу лору
+          if (subsection) {
+            // Логіка для відкриття конкретного елемента лору
+            console.log('Navigate to lore:', subsection, itemId);
+          }
+          break;
+        case 'notes':
+        case 'maps':
+        case 'scenarios':
+        case 'relationships':
+        case 'chronology':
+          // Для інших розділів поки що просто переходимо до розділу
+          console.log('Navigate to:', { section, subsection, itemId });
+          break;
+      }
+    }
   };
 
   const handleSave = () => {
@@ -209,6 +234,8 @@ const Index = () => {
               onCreateWorld={handleCreateWorld}
               onSelectWorld={handleSelectWorld}
               selectedWorld={currentWorldId}
+              onNavigate={handleNavigate}
+              onHomeClick={handleHomeClick}
             />
           )}
 

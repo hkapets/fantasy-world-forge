@@ -1,6 +1,8 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
 import { SmartRecommendations } from './SmartRecommendations';
+import { QuickNavigation } from '../Common/QuickNavigation';
+import { BreadcrumbNavigation } from '../Common/BreadcrumbNavigation';
 
 interface World {
   id: string;
@@ -15,13 +17,17 @@ interface DashboardProps {
   onCreateWorld: () => void;
   onSelectWorld: (worldId: string) => void;
   selectedWorld: string | null;
+  onNavigate: (section: string, subsection?: string, itemId?: string) => void;
+  onHomeClick: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
   worlds,
   onCreateWorld,
   onSelectWorld,
-  selectedWorld
+  selectedWorld,
+  onNavigate,
+  onHomeClick
 }) => {
   if (worlds.length === 0) {
     return (
@@ -146,6 +152,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div style={{ padding: '2rem' }}>
+      {/* Хлібні крихти */}
+      <BreadcrumbNavigation
+        items={[
+          { label: 'Мої світи', isActive: true }
+        ]}
+        onHomeClick={onHomeClick}
+      />
+
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -168,6 +182,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </button>
       </div>
 
+      {/* Швидка навігація */}
+      {selectedWorld && (
+        <QuickNavigation
+          currentWorldId={selectedWorld}
+          onNavigate={onNavigate}
+        />
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {worlds.map(world => (
           <div
@@ -215,9 +236,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         }}>
           <SmartRecommendations 
             worldId={selectedWorld}
-            onNavigate={(section, subsection, itemId) => {
-              console.log('Navigate to:', section, subsection, itemId);
-            }}
+            onNavigate={onNavigate}
           />
         </div>
       )}

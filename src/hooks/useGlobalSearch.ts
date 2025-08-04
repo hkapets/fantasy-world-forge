@@ -85,7 +85,7 @@ export function useGlobalSearch() {
             description: character.description || `${character.race} ${character.characterClass}`.trim(),
             worldId: character.worldId,
             worldName: worldsMap[character.worldId] || 'Невідомий світ',
-            section: 'Персонажі',
+            section: 'characters',
             matchedFields,
             relevance: calculateRelevance(character, query, matchedFields)
           });
@@ -112,7 +112,7 @@ export function useGlobalSearch() {
               geography: 'Лор → Географія',
               history: 'Лор → Історія',
               politics: 'Лор → Політика',
-              religion: 'Лор → Релігія і міфологія',
+              religion: 'Лор → Релігія і mythologie',
               languages: 'Лор → Писемність, мови і літочислення',
               magic: 'Лор → Магія',
               artifacts: 'Лор → Артефакти'
@@ -125,8 +125,8 @@ export function useGlobalSearch() {
               description: item.description,
               worldId: world.id,
               worldName: world.name,
-              section: 'Лор',
-              subsection: sectionNames[item.type] || item.type,
+              section: 'lore',
+              subsection: item.type,
               matchedFields,
               relevance: calculateRelevance(item, query, matchedFields)
             });
@@ -149,7 +149,7 @@ export function useGlobalSearch() {
               description: chronology.description,
               worldId: world.id,
               worldName: world.name,
-              section: 'Хронологія',
+              section: 'chronology',
               matchedFields,
               relevance: calculateRelevance(chronology, query, matchedFields)
             });
@@ -175,8 +175,8 @@ export function useGlobalSearch() {
               description: `${event.date} рік: ${event.description}`,
               worldId: world.id,
               worldName: world.name,
-              section: 'Хронологія',
-              subsection: 'Подія',
+              section: 'chronology',
+              subsection: 'event',
               matchedFields,
               relevance: calculateRelevance(event, query, matchedFields)
             });
@@ -203,7 +203,7 @@ export function useGlobalSearch() {
               description: note.content.substring(0, 100) + (note.content.length > 100 ? '...' : ''),
               worldId: world.id,
               worldName: world.name,
-              section: 'Нотатки',
+              section: 'notes',
               matchedFields,
               relevance: calculateRelevance(note, query, matchedFields)
             });
@@ -228,7 +228,7 @@ export function useGlobalSearch() {
               description: `${relationship.relationshipType}: ${relationship.description}`,
               worldId: world.id,
               worldName: world.name,
-              section: 'Зв\'язки',
+              section: 'relationships',
               matchedFields,
               relevance: calculateRelevance(relationship, query, matchedFields)
             });
@@ -254,7 +254,7 @@ export function useGlobalSearch() {
               description: map.description,
               worldId: world.id,
               worldName: world.name,
-              section: 'Карти світу',
+              section: 'maps',
               matchedFields,
               relevance: calculateRelevance(map, query, matchedFields)
             });
@@ -282,7 +282,7 @@ export function useGlobalSearch() {
             description: scenario.description,
             worldId: scenario.worldId,
             worldName: worldsMap[scenario.worldId] || 'Невідомий світ',
-            section: 'Сценарії',
+            section: 'scenarios',
             matchedFields,
             relevance: calculateRelevance(scenario, query, matchedFields)
           });
