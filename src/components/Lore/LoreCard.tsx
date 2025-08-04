@@ -4,7 +4,7 @@ import { BookOpen, Tag, Calendar, Eye } from 'lucide-react';
 interface LoreItem {
   id: string;
   title: string;
-  content: string;
+  description: string;
   category: string;
   tags: string[];
   createdAt: string;
@@ -13,21 +13,21 @@ interface LoreItem {
 }
 
 interface LoreCardProps {
-  lore: LoreItem;
+  item: LoreItem;
   onClick: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
 export const LoreCard: React.FC<LoreCardProps> = ({
-  lore,
+  item,
   onClick,
   onEdit,
   onDelete,
 }) => {
-  const truncatedContent = lore.content.length > 150 
-    ? lore.content.substring(0, 150) + '...' 
-    : lore.content;
+  const truncatedContent = item.description.length > 150 
+    ? item.description.substring(0, 150) + '...' 
+    : item.description;
 
   return (
     <div
@@ -37,13 +37,13 @@ export const LoreCard: React.FC<LoreCardProps> = ({
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-purple-600" />
-          <h3 className="text-lg font-semibold text-gray-800">{lore.title}</h3>
-          {lore.isSecret && (
+          <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
+          {item.isSecret && (
             <Eye className="w-4 h-4 text-red-500" title="Secret Lore" />
           )}
         </div>
         <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-          {lore.category}
+          {item.subtype}
         </span>
       </div>
 
@@ -51,9 +51,9 @@ export const LoreCard: React.FC<LoreCardProps> = ({
         {truncatedContent}
       </p>
 
-      {lore.tags.length > 0 && (
+      {item.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
-          {lore.tags.slice(0, 3).map((tag) => (
+          {item.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
               className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full"
@@ -62,9 +62,9 @@ export const LoreCard: React.FC<LoreCardProps> = ({
               {tag}
             </span>
           ))}
-          {lore.tags.length > 3 && (
+          {item.tags.length > 3 && (
             <span className="text-xs text-gray-500 px-2 py-1">
-              +{lore.tags.length - 3} more
+              +{item.tags.length - 3} more
             </span>
           )}
         </div>
@@ -73,7 +73,7 @@ export const LoreCard: React.FC<LoreCardProps> = ({
       <div className="flex items-center justify-between text-xs text-gray-500">
         <div className="flex items-center gap-1">
           <Calendar className="w-3 h-3" />
-          {new Date(lore.createdAt).toLocaleDateString()}
+          {new Date(item.createdAt).toLocaleDateString()}
         </div>
         
         {(onEdit || onDelete) && (
