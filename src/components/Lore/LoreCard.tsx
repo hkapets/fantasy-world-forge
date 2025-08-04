@@ -3,13 +3,13 @@ import { BookOpen, Tag, Calendar, Eye } from 'lucide-react';
 
 interface LoreItem {
   id: string;
-  title: string;
+  name: string;
   description: string;
-  category: string;
-  tags: string[];
+  subtype?: string;
+  tags?: string[];
   createdAt: string;
   worldId: string;
-  isSecret: boolean;
+  isSecret?: boolean;
 }
 
 interface LoreCardProps {
@@ -42,18 +42,20 @@ export const LoreCard: React.FC<LoreCardProps> = ({
             <Eye className="w-4 h-4 text-red-500" title="Secret Lore" />
           )}
         </div>
-        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-          {item.subtype}
-        </span>
+        {item.subtype && (
+          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+            {item.subtype}
+          </span>
+        )}
       </div>
 
       <p className="text-gray-600 text-sm mb-4 leading-relaxed">
         {truncatedContent}
       </p>
 
-      {item.tags.length > 0 && (
+      {(item.tags || []).length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
-          {item.tags.slice(0, 3).map((tag) => (
+          {(item.tags || []).slice(0, 3).map((tag) => (
             <span
               key={tag}
               className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full"
@@ -62,9 +64,9 @@ export const LoreCard: React.FC<LoreCardProps> = ({
               {tag}
             </span>
           ))}
-          {item.tags.length > 3 && (
+          {(item.tags || []).length > 3 && (
             <span className="text-xs text-gray-500 px-2 py-1">
-              +{item.tags.length - 3} more
+              +{(item.tags || []).length - 3} more
             </span>
           )}
         </div>
