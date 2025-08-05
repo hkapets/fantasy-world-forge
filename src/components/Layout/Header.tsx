@@ -91,6 +91,7 @@ export const Header: React.FC<HeaderProps> = ({
         }}>
           <button
             onClick={handleSearchClick}
+            data-search-trigger
             style={{
               width: '100%',
               display: 'flex',

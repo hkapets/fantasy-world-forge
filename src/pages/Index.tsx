@@ -14,6 +14,12 @@ import { Scenarios } from '@/components/Scenarios/Scenarios';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 import { Settings } from '@/components/Settings/Settings';
 import { useSoundSystem } from '@/hooks/useSoundSystem';
+import { PerformanceMonitor } from '@/components/Common/PerformanceMonitor';
+import { DataValidator } from '@/components/Common/DataValidator';
+import { KeyboardShortcuts } from '@/components/Common/KeyboardShortcuts';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { toast } from '@/components/ui/sonner';
+import { DataIntegrityChecker } from '@/components/Common/DataIntegrityChecker';
 
 interface Character {
   id: string;
@@ -42,6 +48,24 @@ const Index = () => {
   } = useWorldsData();
 
   const { playEffect } = useSoundSystem();
+
+  // Автозбереження
+  const { lastSave, saveNow } = useAutoSave({
+    enabled: true,
+    interval: 5 * 60 * 1000, // 5 хвилин
+    onSave: () => {
+      toast.success('Дані автоматично збережено', {
+        duration: 2000,
+        position: 'bottom-right'
+      });
+    },
+    onError: (error) => {
+      toast.error('Помилка автозбереження: ' + error.message, {
+        duration: 5000,
+        position: 'bottom-right'
+      });
+    }
+  });
 
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isCreateWorldModalOpen, setIsCreateWorldModalOpen] = useState(false);
@@ -294,6 +318,22 @@ const Index = () => {
         isOpen={isCreateWorldModalOpen}
         onClose={() => setIsCreateWorldModalOpen(false)}
         onSave={handleSaveWorld}
+      />
+
+      {/* Системні компоненти */}
+      <PerformanceMonitor />
+      <DataValidator />
+      <DataIntegrityChecker />
+      <KeyboardShortcuts
+        onNavigate={setActiveSection}
+        onSave={handleSave}
+        onExport={handleExport}
+        onCreateWorld={handleCreateWorld}
+        onSearch={() => {
+          // Відкриваємо глобальний пошук через header
+          const searchButton = document.querySelector('[data-search-trigger]') as HTMLElement;
+          searchButton?.click();
+        }}
       />
     </div>
   );
