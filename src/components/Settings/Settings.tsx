@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun, Volume2, VolumeX, Download, Upload, Trash2, RefreshCw, Globe, Palette } from 'lucide-react';
+import { DatabaseSettings } from './DatabaseSettings';
 
 interface SettingsProps {
   currentWorldId: string | null;
@@ -425,6 +426,9 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
         
         </div>
       </div>
+
+      {/* Розділ База даних */}
+      <DatabaseSettings />
 
       {/* Розділ Дані */}
       <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>

@@ -20,6 +20,7 @@ import { KeyboardShortcuts } from '@/components/Common/KeyboardShortcuts';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { toast } from '@/components/ui/sonner';
 import { DataIntegrityChecker } from '@/components/Common/DataIntegrityChecker';
+import { OfflineIndicator } from '@/components/Common/OfflineIndicator';
 
 interface Character {
   id: string;
@@ -324,6 +325,7 @@ const Index = () => {
       <PerformanceMonitor />
       <DataValidator />
       <DataIntegrityChecker />
+      <OfflineIndicator />
       <KeyboardShortcuts
         onNavigate={setActiveSection}
         onSave={handleSave}
