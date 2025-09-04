@@ -12,6 +12,8 @@ export function useAutoSave(options: AutoSaveOptions) {
   const [lastSave, setLastSave] = useLocalStorage('fantasyWorldBuilder_lastAutoSave', null);
   const intervalRef = useRef<NodeJS.Timeout>();
   const lastDataRef = useRef<string>('');
+  const lastSaveTimeRef = useRef<number>(0);
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
     if (!options.enabled) {
@@ -23,6 +25,13 @@ export function useAutoSave(options: AutoSaveOptions) {
 
     const performAutoSave = () => {
       try {
+        const now = Date.now();
+        
+        // Запобігаємо занадто частому збереженню (мінімум 30 секунд між збереженнями)
+        if (now - lastSaveTimeRef.current < 30000) {
+          return;
+        }
+
         // Збираємо всі дані Fantasy World Builder
         const allData: Record<string, any> = {};
         
@@ -34,9 +43,10 @@ export function useAutoSave(options: AutoSaveOptions) {
 
         const currentDataHash = JSON.stringify(allData);
         
-        // Перевіряємо чи змінилися дані
-        if (currentDataHash !== lastDataRef.current) {
+        // Перевіряємо чи змінилися дані та чи це не перший запуск
+        if (currentDataHash !== lastDataRef.current && isInitializedRef.current) {
           lastDataRef.current = currentDataHash;
+          lastSaveTimeRef.current = now;
           setLastSave(new Date().toISOString());
           
           if (options.onSave) {
@@ -44,6 +54,10 @@ export function useAutoSave(options: AutoSaveOptions) {
           }
 
           console.log('AutoSave: Дані збережено', new Date().toLocaleTimeString('uk-UA'));
+        } else if (!isInitializedRef.current) {
+          // Перший запуск - просто зберігаємо хеш без повідомлення
+          lastDataRef.current = currentDataHash;
+          isInitializedRef.current = true;
         }
       } catch (error) {
         console.error('AutoSave error:', error);
@@ -53,7 +67,7 @@ export function useAutoSave(options: AutoSaveOptions) {
       }
     };
 
-    // Початкове збереження
+    // Початкова ініціалізація (без повідомлення)
     performAutoSave();
 
     // Встановлюємо інтервал
@@ -77,6 +91,7 @@ export function useAutoSave(options: AutoSaveOptions) {
         }
       });
 
+      lastSaveTimeRef.current = Date.now();
       setLastSave(new Date().toISOString());
       
       if (options.onSave) {

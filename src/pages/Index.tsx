@@ -53,10 +53,10 @@ const Index = () => {
   // Автозбереження
   const { lastSave, saveNow } = useAutoSave({
     enabled: true,
-    interval: 5 * 60 * 1000, // 5 хвилин
+    interval: 2 * 60 * 1000, // 2 хвилини
     onSave: () => {
       toast.success('Дані автоматично збережено', {
-        duration: 2000,
+        duration: 1500,
         position: 'bottom-right'
       });
     },
