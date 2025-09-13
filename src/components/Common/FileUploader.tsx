@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, Check, X, Image, Compress } from 'lucide-react';
+import { Upload, Check, X, Image, Compass as Compress } from 'lucide-react';
 import { DragDropZone } from './DragDropZone';
 import { ImageCompressor } from './ImageCompressor';
 import { FileManager } from '@/lib/fileManager';

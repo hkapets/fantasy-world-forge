@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Compress, Download, Eye, Settings } from 'lucide-react';
+import { Compass as Compress, Download, Eye, Settings } from 'lucide-react';
 
 interface ImageCompressorProps {
   originalImage: string;
