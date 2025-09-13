@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from './Modal';
+import { FileUploader } from '../Common/FileUploader';
 
 import { TagInput } from '../Common/TagInput';
 import { RelatedEntities } from '../Common/RelatedEntities';
@@ -172,19 +173,19 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
             </div>
           )}
           
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="input"
-            style={{ padding: '0.5rem' }}
+          <FileUploader
+            onFileUploaded={(fileUrl) => handleChange('image', fileUrl)}
+            acceptedTypes={['image/*']}
+            category="characters"
+            autoCompress={true}
+            showPreview={false}
           />
           <div style={{
             fontSize: '0.75rem',
             color: 'var(--text-muted)',
             marginTop: '0.25rem'
           }}>
-            Оберіть зображення або залиште порожнім
+            Перетягніть зображення або клікніть для вибору
           </div>
         </div>
 

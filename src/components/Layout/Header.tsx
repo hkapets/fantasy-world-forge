@@ -1,9 +1,11 @@
 import React from 'react';
-import { Search, Volume2, VolumeX, Save, Download, Command } from 'lucide-react';
+import { Search, Volume2, VolumeX, Save, Download, Command, Package } from 'lucide-react';
 import fantasyIcon from '@/assets/fantasy-icon.png';
 import { GlobalSearchModal } from './GlobalSearchModal';
 import { MusicPlayer } from './MusicPlayer';
 import { useSoundSystem } from '@/hooks/useSoundSystem';
+import { ExportWizard } from '../Export/ExportWizard';
+import { useWorldsData } from '@/hooks/useLocalStorage';
 import { useState } from 'react';
 
 interface HeaderProps {
@@ -20,7 +22,9 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigate
 }) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [showExportWizard, setShowExportWizard] = useState(false);
   const { isEnabled, toggleEnabled, playEffect } = useSoundSystem();
+  const { getCurrentWorld, currentWorldId } = useWorldsData();
 
   const handleSearchClick = () => {
     playEffect('buttonClick');
@@ -176,7 +180,11 @@ export const Header: React.FC<HeaderProps> = ({
             className="btn btn-primary"
             onClick={() => {
               playEffect('success');
-              onExport();
+              if (currentWorldId) {
+                setShowExportWizard(true);
+              } else {
+                onExport();
+              }
             }}
             style={{
               display: 'flex',
@@ -184,7 +192,7 @@ export const Header: React.FC<HeaderProps> = ({
               gap: '0.5rem'
             }}
           >
-            <Download size={18} />
+            <Package size={18} />
             Експорт
           </button>
         </div>
@@ -195,6 +203,16 @@ export const Header: React.FC<HeaderProps> = ({
         onClose={() => setIsSearchModalOpen(false)}
         onNavigate={onNavigate}
       />
+
+      {/* Експорт візард */}
+      {showExportWizard && currentWorldId && (
+        <ExportWizard
+          isOpen={showExportWizard}
+          onClose={() => setShowExportWizard(false)}
+          worldId={currentWorldId}
+          worldName={getCurrentWorld()?.name || 'Невідомий світ'}
+        />
+      )}
     </>
   );
 };

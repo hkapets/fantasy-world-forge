@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Modal } from './Modal';
 import { WorldMap } from '@/hooks/useMapsData';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { FileUploader } from '../Common/FileUploader';
 
 interface CreateMapModalProps {
   isOpen: boolean;
@@ -276,28 +277,25 @@ export const CreateMapModal: React.FC<CreateMapModalProps> = ({
             </div>
           )}
 
-          {/* Завантаження файлу */}
-          <div style={{ marginBottom: '1rem' }}>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              style={{ display: 'none' }}
-            />
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => fileInputRef.current?.click()}
-              style={{ width: '100%' }}
-            >
-              <Upload size={16} style={{ marginRight: '0.5rem' }} />
-              Завантажити зображення
-            </button>
-          </div>
+          {/* Завантажувач файлів */}
+          {!selectedImage && (
+            <div style={{ marginBottom: '1rem' }}>
+              <FileUploader
+                onFileUploaded={(fileUrl) => {
+                  setFormData(prev => ({ ...prev, imageFile: fileUrl, imageUrl: '' }));
+                  setSelectedImage(fileUrl);
+                }}
+                acceptedTypes={['image/*']}
+                category="maps"
+                autoCompress={true}
+                showPreview={false}
+              />
+            </div>
+          )}
 
           {/* Готові зображення */}
-          <div style={{ marginBottom: '0.5rem' }}>
+          {!selectedImage && (
+            <div style={{ marginBottom: '0.5rem' }}>
             <div style={{
               fontSize: '0.75rem',
               color: 'var(--text-muted)',
@@ -336,7 +334,8 @@ export const CreateMapModal: React.FC<CreateMapModalProps> = ({
                 </div>
               ))}
             </div>
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Розміри карти */}

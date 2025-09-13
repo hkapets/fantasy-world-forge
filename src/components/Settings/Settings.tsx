@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Moon, Sun, Volume2, VolumeX, Download, Upload, Trash2, RefreshCw, Globe, Palette } from 'lucide-react';
+import { Moon, Sun, Volume2, VolumeX, Download, Upload, Trash2, RefreshCw, Globe, Palette, Package } from 'lucide-react';
 import { DatabaseSettings } from './DatabaseSettings';
+import { ExportWizard } from '../Export/ExportWizard';
+import { useWorldsData } from '@/hooks/useLocalStorage';
 
 interface SettingsProps {
   currentWorldId: string | null;
@@ -30,6 +32,8 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [showExportWizard, setShowExportWizard] = useState(false);
+  const { getCurrentWorld } = useWorldsData();
 
   // Завантаження налаштувань з localStorage
   useEffect(() => {
@@ -446,7 +450,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
           {/* Експорт */}
           <button
             className="btn btn-primary"
-            onClick={handleExportData}
+            onClick={() => setShowExportWizard(true)}
             disabled={isExporting}
             style={{
               display: 'flex',
@@ -455,8 +459,8 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
               justifyContent: 'center'
             }}
           >
-            <Download size={20} />
-            {isExporting ? 'Експортування...' : 'Експортувати всі дані'}
+            <Package size={20} />
+            {isExporting ? 'Експортування...' : 'Розширений експорт'}
           </button>
 
           {/* Імпорт */}
@@ -546,6 +550,16 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
           Версія 1.0.0 • Створено з ❤️ для фентезійних світів
         </p>
       </div>
+
+      {/* Експорт візард */}
+      {showExportWizard && currentWorldId && (
+        <ExportWizard
+          isOpen={showExportWizard}
+          onClose={() => setShowExportWizard(false)}
+          worldId={currentWorldId}
+          worldName={getCurrentWorld()?.name || 'Невідомий світ'}
+        />
+      )}
     </div>
   );
 };

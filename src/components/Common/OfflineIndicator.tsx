@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Wifi, WifiOff, Database, Cloud } from 'lucide-react';
+import { Wifi, WifiOff, Database, Cloud, HardDrive } from 'lucide-react';
 
 export const OfflineIndicator: React.FC = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showIndicator, setShowIndicator] = useState(false);
+  const [storageInfo, setStorageInfo] = useState<{
+    used: number;
+    quota: number;
+  } | null>(null);
 
   useEffect(() => {
     const handleOnline = () => {
@@ -23,6 +27,16 @@ export const OfflineIndicator: React.FC = () => {
     // Показуємо індикатор якщо офлайн при завантаженні
     if (!navigator.onLine) {
       setShowIndicator(true);
+    }
+
+    // Отримуємо інформацію про сховище
+    if ('storage' in navigator && 'estimate' in navigator.storage) {
+      navigator.storage.estimate().then(estimate => {
+        setStorageInfo({
+          used: estimate.usage || 0,
+          quota: estimate.quota || 0
+        });
+      });
     }
 
     return () => {
@@ -55,14 +69,22 @@ export const OfflineIndicator: React.FC = () => {
       {isOnline ? (
         <>
           <Wifi size={18} />
-          З'єднання відновлено
-          <Database size={16} style={{ marginLeft: '0.5rem', opacity: 0.8 }} />
+          Онлайн режим
+          <HardDrive size={16} style={{ marginLeft: '0.5rem', opacity: 0.8 }} />
+          {storageInfo && (
+            <span style={{ fontSize: '0.75rem', marginLeft: '0.5rem' }}>
+              {(storageInfo.used / 1024 / 1024).toFixed(1)}MB використано
+            </span>
+          )}
         </>
       ) : (
         <>
           <WifiOff size={18} />
           Офлайн режим
-          <Database size={16} style={{ marginLeft: '0.5rem', opacity: 0.8 }} />
+          <HardDrive size={16} style={{ marginLeft: '0.5rem', opacity: 0.8 }} />
+          <span style={{ fontSize: '0.75rem', marginLeft: '0.5rem' }}>
+            Локальне збереження
+          </span>
         </>
       )}
     </div>
