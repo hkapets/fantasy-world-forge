@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Wand2, Template } from 'lucide-react';
+import { Wand2, BookTemplate as Template } from 'lucide-react';
 import { Modal } from './Modal';
 import { FileUploader } from '../Common/FileUploader';
 import { NameGeneratorModal } from '../Tools/NameGeneratorModal';

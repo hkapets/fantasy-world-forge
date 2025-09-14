@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Template, Star, Clock, Users, BookOpen, Globe, Film, Copy, Trash2, Edit } from 'lucide-react';
+import { BookTemplate as Template, Star, Clock, Users, BookOpen, Globe, Film, Copy, Trash2, Edit } from 'lucide-react';
 import { useTemplates, TemplateManager } from '@/lib/templates';
 import { Modal } from '../Modal/Modal';
 

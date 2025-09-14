@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ArrowLeft, Plus, Search, Filter, Template, Wand2 } from 'lucide-react';
+import { ArrowLeft, Plus, Search, Filter, BookTemplate as Template, Wand2 } from 'lucide-react';
 import { LoreCard } from './LoreCard';
 import { CreateLoreModal } from '../Modal/CreateLoreModal';
 import { LoreItemView } from './LoreItemView';
