@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { ArrowLeft, Plus, Search, Filter } from 'lucide-react';
+import { ArrowLeft, Plus, Search, Filter, Template, Wand2 } from 'lucide-react';
 import { LoreCard } from './LoreCard';
 import { CreateLoreModal } from '../Modal/CreateLoreModal';
 import { LoreItemView } from './LoreItemView';
+import { TemplateSelector } from '../Tools/TemplateSelector';
+import { NameGeneratorModal } from '../Tools/NameGeneratorModal';
 import { useLoreData } from '@/hooks/useLoreData';
 
 interface LoreSectionProps {
@@ -34,6 +36,8 @@ export const LoreSection: React.FC<LoreSectionProps> = ({
   const [sortBy, setSortBy] = useState('name');
   const [filterBy, setFilterBy] = useState('all');
   const [viewingItem, setViewingItem] = useState<any>(null);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [showNameGenerator, setShowNameGenerator] = useState(false);
 
   const sectionItems = loreItems.filter(item => item.type === type);
 
@@ -104,13 +108,31 @@ export const LoreSection: React.FC<LoreSectionProps> = ({
           </h1>
         </div>
 
-        <button
-          className="btn btn-primary"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          <Plus size={20} style={{ marginRight: '0.5rem' }} />
-          Створити
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowTemplateSelector(true)}
+            title="Шаблони"
+          >
+            <Template size={18} />
+          </button>
+          
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowNameGenerator(true)}
+            title="Генератор назв"
+          >
+            <Wand2 size={18} />
+          </button>
+          
+          <button
+            className="btn btn-primary"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            <Plus size={20} style={{ marginRight: '0.5rem' }} />
+            Створити
+          </button>
+        </div>
       </div>
 
       {/* Controls */}
@@ -195,6 +217,24 @@ export const LoreSection: React.FC<LoreSectionProps> = ({
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSave={(loreData) => addLoreItem({ ...loreData, type })}
+      />
+
+      {/* Інструменти */}
+      <TemplateSelector
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        onSelectTemplate={(templateData) => {
+          // Застосовуємо шаблон до нової форми
+          setIsCreateModalOpen(true);
+          setShowTemplateSelector(false);
+        }}
+        category="lore"
+      />
+
+      <NameGeneratorModal
+        isOpen={showNameGenerator}
+        onClose={() => setShowNameGenerator(false)}
+        generationType="location"
       />
     </div>
   );

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { Wand2, Template } from 'lucide-react';
 import { Modal } from './Modal';
 import { FileUploader } from '../Common/FileUploader';
+import { NameGeneratorModal } from '../Tools/NameGeneratorModal';
+import { TemplateSelector } from '../Tools/TemplateSelector';
 
 import { TagInput } from '../Common/TagInput';
 import { RelatedEntities } from '../Common/RelatedEntities';
@@ -54,6 +57,9 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
     description: editingCharacter?.description || '',
     tags: editingCharacter?.tags || []
   });
+
+  const [showNameGenerator, setShowNameGenerator] = useState(false);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -131,7 +137,21 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
     onClose();
   };
 
+  const handleSelectName = (name: string) => {
+    handleChange('name', name);
+    setShowNameGenerator(false);
+  };
+
+  const handleSelectTemplate = (templateData: any) => {
+    setFormData(prev => ({
+      ...prev,
+      ...templateData
+    }));
+    setShowTemplateSelector(false);
+  };
+
   return (
+    <>
     <Modal
       isOpen={isOpen}
       onClose={handleCancel}
@@ -141,6 +161,34 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
       maxWidth="700px"
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        {/* Швидкі інструменти */}
+        <div style={{
+          display: 'flex',
+          gap: '1rem',
+          padding: '1rem',
+          background: 'var(--bg-secondary)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--border-primary)'
+        }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowTemplateSelector(true)}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <Template size={16} />
+            Шаблони
+          </button>
+          
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowNameGenerator(true)}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <Wand2 size={16} />
+            Генератор імен
+          </button>
+        </div>
+
         {/* Зображення */}
         <div>
           <label style={{
@@ -416,5 +464,21 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({
         </div>
       </div>
     </Modal>
+
+      {/* Модальні вікна інструментів */}
+      <NameGeneratorModal
+        isOpen={showNameGenerator}
+        onClose={() => setShowNameGenerator(false)}
+        onSelectName={handleSelectName}
+        generationType="character"
+      />
+
+      <TemplateSelector
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        onSelectTemplate={handleSelectTemplate}
+        category="character"
+      />
+    </>
   );
 };

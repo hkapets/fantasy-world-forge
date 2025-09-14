@@ -1,10 +1,11 @@
 import React from 'react';
-import { Search, Volume2, VolumeX, Save, Download, Command, Package } from 'lucide-react';
+import { Search, Volume2, VolumeX, Save, Download, Command, Package, Wand2 } from 'lucide-react';
 import fantasyIcon from '@/assets/fantasy-icon.png';
 import { GlobalSearchModal } from './GlobalSearchModal';
 import { MusicPlayer } from './MusicPlayer';
 import { useSoundSystem } from '@/hooks/useSoundSystem';
 import { ExportWizard } from '../Export/ExportWizard';
+import { NameGeneratorModal } from '../Tools/NameGeneratorModal';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 import { useState } from 'react';
 
@@ -23,6 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [showExportWizard, setShowExportWizard] = useState(false);
+  const [showNameGenerator, setShowNameGenerator] = useState(false);
   const { isEnabled, toggleEnabled, playEffect } = useSoundSystem();
   const { getCurrentWorld, currentWorldId } = useWorldsData();
 
@@ -147,6 +149,23 @@ export const Header: React.FC<HeaderProps> = ({
             className="btn btn-secondary"
             onClick={() => {
               playEffect('buttonClick');
+              setShowNameGenerator(true);
+            }}
+            style={{
+              padding: '0.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            title="Генератор імен"
+          >
+            <Wand2 size={20} />
+          </button>
+
+          <button
+            className="btn btn-secondary"
+            onClick={() => {
+              playEffect('buttonClick');
               toggleEnabled();
             }}
             style={{
@@ -213,6 +232,13 @@ export const Header: React.FC<HeaderProps> = ({
           worldName={getCurrentWorld()?.name || 'Невідомий світ'}
         />
       )}
+
+      {/* Глобальний генератор імен */}
+      <NameGeneratorModal
+        isOpen={showNameGenerator}
+        onClose={() => setShowNameGenerator(false)}
+        generationType="character"
+      />
     </>
   );
 };

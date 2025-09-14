@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Package, Wand2 } from 'lucide-react';
 import { CharacterCard } from './CharacterCard';
 import { CreateCharacterModal } from '../Modal/CreateCharacterModal';
+import { BulkOperationsPanel } from '../Tools/BulkOperationsPanel';
+import { NameGeneratorModal } from '../Tools/NameGeneratorModal';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCharacterMapIntegration } from '@/hooks/useCharacterMapIntegration';
 
@@ -40,6 +42,8 @@ export const Characters: React.FC<CharactersProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'race' | 'class' | 'created'>('name');
   const [filterBy, setFilterBy] = useState('');
+  const [showBulkOperations, setShowBulkOperations] = useState(false);
+  const [showNameGenerator, setShowNameGenerator] = useState(false);
 
   // Фільтруємо персонажів поточного світу
   const worldCharacters = useMemo(() => {
@@ -166,13 +170,32 @@ export const Characters: React.FC<CharactersProps> = ({
         }}>
           Персонажі
         </h1>
-        <button 
-          className="btn btn-primary"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          <Plus size={20} style={{ marginRight: '0.5rem' }} />
-          Створити персонажа
-        </button>
+        
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowNameGenerator(true)}
+            title="Генератор імен"
+          >
+            <Wand2 size={18} />
+          </button>
+          
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowBulkOperations(true)}
+            title="Масові операції"
+          >
+            <Package size={18} />
+          </button>
+          
+          <button 
+            className="btn btn-primary"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            <Plus size={20} style={{ marginRight: '0.5rem' }} />
+            Створити персонажа
+          </button>
+        </div>
       </div>
 
       {/* Пошук та фільтри */}
@@ -300,6 +323,21 @@ export const Characters: React.FC<CharactersProps> = ({
         onSave={editingCharacter ? handleEditCharacter : handleCreateCharacter}
         editingCharacter={editingCharacter}
         currentWorldId={currentWorldId}
+      />
+
+      {/* Інструменти */}
+      <BulkOperationsPanel
+        isOpen={showBulkOperations}
+        onClose={() => setShowBulkOperations(false)}
+        entityType="character"
+        availableEntities={worldCharacters.map(char => ({ id: char.id, name: char.name }))}
+        currentWorldId={currentWorldId}
+      />
+
+      <NameGeneratorModal
+        isOpen={showNameGenerator}
+        onClose={() => setShowNameGenerator(false)}
+        generationType="character"
       />
     </div>
   );
