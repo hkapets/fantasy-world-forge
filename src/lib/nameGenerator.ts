@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 // Генератор імен для фентезійних персонажів (офлайн словники)
 
 interface NameData {
