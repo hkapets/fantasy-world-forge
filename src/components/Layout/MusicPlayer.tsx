@@ -10,6 +10,7 @@ export const MusicPlayer: React.FC = () => {
     volume,
     effectsVolume,
     backgroundTracks,
+    audioInitialized,
     toggleEnabled,
     toggleMusic,
     nextTrack,
@@ -20,6 +21,25 @@ export const MusicPlayer: React.FC = () => {
   } = useSoundSystem();
 
   const currentTrackInfo = getCurrentTrack();
+
+  // Якщо аудіо не ініціалізовано або немає треків
+  if (!audioInitialized || backgroundTracks.length === 0) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        padding: '0.5rem',
+        background: 'var(--bg-secondary)',
+        borderRadius: 'var(--radius-md)',
+        border: '1px solid var(--border-primary)'
+      }}>
+        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+          Аудіо недоступне
+        </span>
+      </div>
+    );
+  }
 
   if (!isEnabled) {
     return (

@@ -6,47 +6,62 @@ interface Track {
   file: string;
 }
 
-// Список фонових треків (додайте ваші MP3 файли в public/audio/music/)
+// Список фонових треків (опціональні MP3 файли в public/audio/music/)
 const backgroundTracks: Track[] = [
-  { id: 'ashes', name: 'Ashes', file: '/audio/music/Ashes.mp3' },
-  { id: 'between-lines', name: 'Between The Lines', file: '/audio/music/Between The Lines.mp3' },
-  { id: 'black-smoke', name: 'Black Smoke Freedom', file: '/audio/music/Black Smoke Freedom.mp3' },
-  { id: 'doubletake', name: 'DoubleTake', file: '/audio/music/DoubleTake.mp3' },
-  { id: 'echoes', name: 'Echoes', file: '/audio/music/Echoes.mp3' },
-  { id: 'elysian', name: 'Elysian', file: '/audio/music/Elysian.mp3' },
-  { id: 'epic-quest', name: 'Epic Quest', file: '/audio/music/Epic Quest.mp3' },
-  { id: 'epic-realm', name: 'Epic Realm', file: '/audio/music/Epic Realm.mp3' },
-  { id: 'epiphany', name: 'Epiphany', file: '/audio/music/Epiphany.mp3' },
-  { id: 'every-step', name: 'Every Step', file: '/audio/music/Every Step.mp3' },
-  { id: 'every-streetlight', name: 'Every Streetlight', file: '/audio/music/Every Streetlight.mp3' },
-  { id: 'finale', name: 'Finale', file: '/audio/music/Finale.mp3' },
-  { id: 'longing-echoes', name: 'Longing Echoes', file: '/audio/music/Longing Echoes.mp3' },
-  { id: 'mystic-realms', name: 'Mystic Realms', file: '/audio/music/Mystic Realms.mp3' },
-  { id: 'mystique', name: 'Mystique', file: '/audio/music/Mystique.mp3' },
-  { id: 'mythic-pulse', name: 'Mythic Pulse', file: '/audio/music/Mythic Pulse.mp3' },
-  { id: 'mythic-realm', name: 'Mythic Realm', file: '/audio/music/Mythic Realm.mp3' },
-  { id: 'mythic-rise', name: 'Mythic Rise', file: '/audio/music/Mythic Rise.mp3' },
-  { id: 'mythic', name: 'Mythic', file: '/audio/music/Mythic.mp3' },
-  { id: 'paradox-breeze', name: 'Paradox Breeze', file: '/audio/music/Paradox Breeze.mp3' },
-  { id: 'saga', name: 'Saga', file: '/audio/music/Saga.mp3' },
-  { id: 'summon', name: 'Summon', file: '/audio/music/Summon.mp3' },
-  { id: 'the-vanguard', name: 'The Vanguard', file: '/audio/music/The Vanguard.mp3' },
-  { id: 'unbreakable', name: 'Unbreakable', file: '/audio/music/Unbreakable.mp3' },
-  { id: 'valor', name: 'Valor', file: '/audio/music/Valor.mp3' },
-  { id: 'yearning', name: 'Yearning', file: '/audio/music/Yearning.mp3' }
+  // Треки будуть додані динамічно якщо файли існують
 ];
 
-// Звукові ефекти (додайте ваші MP3 файли в public/audio/effects/)
+// Звукові ефекти (опціональні MP3 файли в public/audio/effects/)
 const soundEffects = {
-  pageFlip: '/audio/effects/page-flip.mp3',
-  buttonClick: '/audio/effects/button-click.mp3',
-  create: '/audio/effects/create.mp3',
-  delete: '/audio/effects/delete.mp3',
-  save: '/audio/effects/save.mp3',
-  error: '/audio/effects/error.mp3',
-  success: '/audio/effects/success.mp3',
-  modalOpen: '/audio/effects/modal-open.mp3',
-  modalClose: '/audio/effects/modal-close.mp3'
+  // Ефекти будуть додані динамічно якщо файли існують
+};
+
+// Функція для перевірки існування аудіо файлу
+const checkAudioFile = async (url: string): Promise<boolean> => {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.ok;
+  } catch {
+    return false;
+  }
+};
+
+// Ініціалізація доступних аудіо файлів
+const initializeAudioFiles = async () => {
+  const musicFiles = [
+    { id: 'ashes', name: 'Ashes', file: '/audio/music/Ashes.mp3' },
+    { id: 'between-lines', name: 'Between The Lines', file: '/audio/music/Between The Lines.mp3' },
+    { id: 'epic-quest', name: 'Epic Quest', file: '/audio/music/Epic Quest.mp3' },
+    { id: 'mystic-realms', name: 'Mystic Realms', file: '/audio/music/Mystic Realms.mp3' },
+    { id: 'mythic', name: 'Mythic', file: '/audio/music/Mythic.mp3' }
+  ];
+
+  const effectFiles = {
+    pageFlip: '/audio/effects/page-flip.mp3',
+    buttonClick: '/audio/effects/button-click.mp3',
+    create: '/audio/effects/create.mp3',
+    delete: '/audio/effects/delete.mp3',
+    save: '/audio/effects/save.mp3',
+    error: '/audio/effects/error.mp3',
+    success: '/audio/effects/success.mp3',
+    modalOpen: '/audio/effects/modal-open.mp3',
+    modalClose: '/audio/effects/modal-close.mp3'
+  };
+
+  // Перевіряємо та додаємо тільки існуючі файли
+  for (const track of musicFiles) {
+    const exists = await checkAudioFile(track.file);
+    if (exists) {
+      backgroundTracks.push(track);
+    }
+  }
+
+  for (const [key, path] of Object.entries(effectFiles)) {
+    const exists = await checkAudioFile(path);
+    if (exists) {
+      soundEffects[key as keyof typeof soundEffects] = path;
+    }
+  }
 };
 
 export function useSoundSystem() {
@@ -55,27 +70,43 @@ export function useSoundSystem() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.3);
   const [effectsVolume, setEffectsVolume] = useState(0.5);
+  const [audioInitialized, setAudioInitialized] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const effectsRef = useRef<{ [key: string]: HTMLAudioElement }>({});
 
   // Ініціалізація аудіо
   useEffect(() => {
-    // Створюємо аудіо елемент для фонової музики
-    audioRef.current = new Audio();
-    audioRef.current.volume = volume;
-    audioRef.current.loop = false;
-    
-    // Автоматичний перехід до наступного треку
-    audioRef.current.addEventListener('ended', () => {
-      nextTrack();
-    });
+    const initAudio = async () => {
+      // Ініціалізуємо доступні аудіо файли
+      await initializeAudioFiles();
+      setAudioInitialized(true);
+    };
 
-    // Створюємо аудіо елементи для звукових ефектів
+    initAudio();
+
+    // Створюємо аудіо елемент для фонової музики
+    if (backgroundTracks.length > 0) {
+      audioRef.current = new Audio();
+      audioRef.current.volume = volume;
+      audioRef.current.loop = false;
+      
+      // Автоматичний перехід до наступного треку
+      audioRef.current.addEventListener('ended', () => {
+        nextTrack();
+      });
+    }
+
+    // Створюємо аудіо елементи для звукових ефектів тільки якщо файли існують
     Object.entries(soundEffects).forEach(([key, path]) => {
-      const audio = new Audio(path);
-      audio.volume = effectsVolume;
-      effectsRef.current[key] = audio;
+      if (path) {
+        const audio = new Audio(path);
+        audio.volume = effectsVolume;
+        audio.onerror = () => {
+          console.warn(`Audio file not found: ${path}`);
+        };
+        effectsRef.current[key] = audio;
+      }
     });
 
     // Завантажуємо налаштування з localStorage
@@ -127,15 +158,28 @@ export function useSoundSystem() {
   const playTrack = (trackIndex: number) => {
     if (!isEnabled || !audioRef.current) return;
 
+    if (backgroundTracks.length === 0) {
+      console.warn('No background tracks available');
+      return;
+    }
+
     const track = backgroundTracks[trackIndex];
     if (!track) return;
 
-    audioRef.current.src = track.file;
-    audioRef.current.play().catch(error => {
-      console.error('Error playing track:', error);
+    // Перевіряємо чи файл існує перед відтворенням
+    checkAudioFile(track.file).then(exists => {
+      if (exists && audioRef.current) {
+        audioRef.current.src = track.file;
+        audioRef.current.play().catch(error => {
+          console.warn('Error playing track:', error);
+          setIsPlaying(false);
+        });
+        setCurrentTrack(trackIndex);
+        setIsPlaying(true);
+      } else {
+        console.warn(`Track file not found: ${track.file}`);
+      }
     });
-    setCurrentTrack(trackIndex);
-    setIsPlaying(true);
   };
 
   const pauseMusic = () => {
@@ -155,11 +199,13 @@ export function useSoundSystem() {
   };
 
   const nextTrack = () => {
+    if (backgroundTracks.length === 0) return;
     const nextIndex = (currentTrack + 1) % backgroundTracks.length;
     playTrack(nextIndex);
   };
 
   const previousTrack = () => {
+    if (backgroundTracks.length === 0) return;
     const prevIndex = currentTrack === 0 ? backgroundTracks.length - 1 : currentTrack - 1;
     playTrack(prevIndex);
   };
@@ -171,8 +217,11 @@ export function useSoundSystem() {
     if (audio) {
       audio.currentTime = 0; // Скидаємо до початку
       audio.play().catch(error => {
-        console.error(`Error playing effect ${effectName}:`, error);
+        console.warn(`Audio effect not available: ${effectName}`);
       });
+    } else {
+      // Fallback - просто логуємо що ефект був викликаний
+      console.log(`Sound effect triggered: ${effectName} (audio file not available)`);
     }
   };
 
@@ -217,6 +266,7 @@ export function useSoundSystem() {
     playEffect,
     
     // Поточний трек
-    getCurrentTrack: () => backgroundTracks[currentTrack]
+    getCurrentTrack: () => backgroundTracks.length > 0 ? backgroundTracks[currentTrack] : null,
+    audioInitialized
   };
 }
