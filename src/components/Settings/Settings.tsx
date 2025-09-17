@@ -5,6 +5,7 @@ import { ExportWizard } from '../Export/ExportWizard';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 import { PluginManager } from './PluginManager';
 import { PluginStore } from './PluginStore';
+import { PluginDeveloper } from '../Tools/PluginDeveloper';
 
 interface SettingsProps {
   currentWorldId: string | null;
@@ -35,7 +36,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [showExportWizard, setShowExportWizard] = useState(false);
-  const [activeTab, setActiveTab] = useState<'general' | 'database' | 'plugins' | 'store'>('general');
+  const [activeTab, setActiveTab] = useState('general');
   const { getCurrentWorld } = useWorldsData();
 
   // Завантаження налаштувань з localStorage
@@ -202,33 +203,39 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
         </p>
       </div>
 
-      {/* Вкладки */}
-      <div style={{
-        display: 'flex',
-        gap: '0.5rem',
+      {/* Навігація по вкладках */}
+      <div style={{ 
+        display: 'flex', 
+        gap: '0.5rem', 
         marginBottom: '2rem',
-        borderBottom: '1px solid var(--border-primary)'
+        borderBottom: '1px solid var(--border-color)',
+        overflowX: 'auto'
       }}>
         {[
           { id: 'general', label: 'Загальні', icon: '⚙️' },
           { id: 'database', label: 'База даних', icon: '🗄️' },
           { id: 'plugins', label: 'Плагіни', icon: '🧩' },
-          { id: 'store', label: 'Магазин', icon: '🏪' }
+          { id: 'store', label: 'Магазин', icon: '🏪' },
+          { id: 'developer', label: 'Розробка', icon: '💻' }
         ].map(tab => (
           <button
             key={tab.id}
-            className={activeTab === tab.id ? 'btn btn-primary' : 'btn btn-secondary'}
-            onClick={() => setActiveTab(tab.id as any)}
+            onClick={() => setActiveTab(tab.id)}
             style={{
+              padding: '0.75rem 1rem',
+              border: 'none',
+              background: activeTab === tab.id ? 'var(--accent-color)' : 'transparent',
+              color: activeTab === tab.id ? 'white' : 'var(--text-secondary)',
+              borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
+              cursor: 'pointer',
               fontSize: '0.875rem',
-              padding: '0.75rem 1.5rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
+              fontWeight: '500',
+              whiteSpace: 'nowrap',
+              borderBottom: activeTab === tab.id ? '2px solid var(--accent-color)' : '2px solid transparent',
+              transition: 'all 0.2s ease'
             }}
           >
-            <span>{tab.icon}</span>
-            {tab.label}
+            {tab.icon} {tab.label}
           </button>
         ))}
       </div>
@@ -236,363 +243,360 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
       {/* Контент вкладок */}
       {activeTab === 'general' && (
         <>
-      {/* Розділ Зовнішній вигляд */}
-      <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
-        <h2 style={{
-          fontSize: '1.5rem',
-          fontWeight: '600',
-          marginBottom: '1.5rem',
-          color: 'var(--text-primary)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}>
-          <Palette size={24} />
-          Зовнішній вигляд
-        </h2>
+          {/* Розділ Зовнішній вигляд */}
+          <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
+            <h2 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              color: 'var(--text-primary)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <Palette size={24} />
+              Зовнішній вигляд
+            </h2>
 
-        {/* Тема */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{
-            display: 'block',
-            fontSize: '1rem',
-            fontWeight: '500',
-            marginBottom: '0.75rem',
-            color: 'var(--text-primary)'
-          }}>
-            Тема інтерфейсу
-          </label>
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            {[
-              { value: 'dark', label: 'Темна', icon: Moon },
-              { value: 'light', label: 'Світла', icon: Sun },
-              { value: 'auto', label: 'Автоматично', icon: RefreshCw }
-            ].map(theme => {
-              const Icon = theme.icon;
-              return (
+            {/* Тема */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '1rem',
+                fontWeight: '500',
+                marginBottom: '0.75rem',
+                color: 'var(--text-primary)'
+              }}>
+                Тема інтерфейсу
+              </label>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                {[
+                  { value: 'dark', label: 'Темна', icon: Moon },
+                  { value: 'light', label: 'Світла', icon: Sun },
+                  { value: 'auto', label: 'Автоматично', icon: RefreshCw }
+                ].map(theme => {
+                  const Icon = theme.icon;
+                  return (
+                    <button
+                      key={theme.value}
+                      className={settings.theme === theme.value ? 'btn btn-primary' : 'btn btn-secondary'}
+                      onClick={() => handleSettingChange('theme', theme.value)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        minWidth: '120px'
+                      }}
+                    >
+                      <Icon size={16} />
+                      {theme.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Анімації */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                fontSize: '1rem',
+                fontWeight: '500',
+                color: 'var(--text-primary)',
+                cursor: 'pointer'
+              }}>
+                <input
+                  type="checkbox"
+                  checked={settings.showAnimations}
+                  onChange={(e) => handleSettingChange('showAnimations', e.target.checked)}
+                  style={{ transform: 'scale(1.2)' }}
+                />
+                Показувати анімації та переходи
+              </label>
+            </div>
+
+            {/* Компактний режим */}
+            <div>
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                fontSize: '1rem',
+                fontWeight: '500',
+                color: 'var(--text-primary)',
+                cursor: 'pointer'
+              }}>
+                <input
+                  type="checkbox"
+                  checked={settings.compactMode}
+                  onChange={(e) => handleSettingChange('compactMode', e.target.checked)}
+                  style={{ transform: 'scale(1.2)' }}
+                />
+                Компактний режим (менші відступи)
+              </label>
+            </div>
+          </div>
+
+          {/* Розділ Звук */}
+          <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
+            <h2 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              color: 'var(--text-primary)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <Volume2 size={24} />
+              Звукові ефекти
+            </h2>
+
+            <div>
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                fontSize: '1rem',
+                fontWeight: '500',
+                color: 'var(--text-primary)',
+                cursor: 'pointer'
+              }}>
+                <input
+                  type="checkbox"
+                  checked={settings.soundEnabled}
+                  onChange={(e) => handleSettingChange('soundEnabled', e.target.checked)}
+                  style={{ transform: 'scale(1.2)' }}
+                />
+                {settings.soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+                Увімкнути звукові ефекти
+              </label>
+            </div>
+          </div>
+
+          {/* Розділ Мова */}
+          <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
+            <h2 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              color: 'var(--text-primary)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <Globe size={24} />
+              Мова інтерфейсу
+            </h2>
+
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              {[
+                { value: 'uk', label: '🇺🇦 Українська' },
+                { value: 'en', label: '🇺🇸 English' },
+                { value: 'pl', label: '🇵🇱 Polski' }
+              ].map(lang => (
                 <button
-                  key={theme.value}
-                  className={settings.theme === theme.value ? 'btn btn-primary' : 'btn btn-secondary'}
-                  onClick={() => handleSettingChange('theme', theme.value)}
+                  key={lang.value}
+                  className={settings.language === lang.value ? 'btn btn-primary' : 'btn btn-secondary'}
+                  onClick={() => handleSettingChange('language', lang.value)}
+                  style={{ minWidth: '140px' }}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </div>
+            <p style={{
+              fontSize: '0.875rem',
+              color: 'var(--text-muted)',
+              marginTop: '0.75rem'
+            }}>
+              Наразі доступна лише українська мова. Інші мови будуть додані в майбутніх оновленнях.
+            </p>
+          </div>
+
+          {/* Розділ Автозбереження */}
+          <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
+            <h2 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              color: 'var(--text-primary)'
+            }}>
+              💾 Автозбереження
+            </h2>
+
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                fontSize: '1rem',
+                fontWeight: '500',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                marginBottom: '1rem'
+              }}>
+                <input
+                  type="checkbox"
+                  checked={settings.autoSave}
+                  onChange={(e) => handleSettingChange('autoSave', e.target.checked)}
+                  style={{ transform: 'scale(1.2)' }}
+                />
+                Увімкнути автоматичне збереження
+              </label>
+
+              {settings.autoSave && (
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    marginBottom: '0.5rem',
+                    color: 'var(--text-secondary)'
+                  }}>
+                    Інтервал збереження: {settings.autoSaveInterval} хв
+                  </label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="30"
+                    value={settings.autoSaveInterval}
+                    onChange={(e) => handleSettingChange('autoSaveInterval', parseInt(e.target.value))}
+                    style={{
+                      width: '100%',
+                      maxWidth: '300px'
+                    }}
+                  />
+                </div>
+              )}
+            
+            </div>
+          </div>
+
+          {/* Розділ Дані */}
+          <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
+            <h2 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              color: 'var(--text-primary)'
+            
+            }}>
+              📁 Управління даними
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {/* Експорт */}
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowExportWizard(true)}
+                disabled={isExporting}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  justifyContent: 'center'
+                }}
+              >
+                <Package size={20} />
+                {isExporting ? 'Експортування...' : 'Розширений експорт'}
+              </button>
+
+              {/* Імпорт */}
+              <div>
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImportData}
+                  style={{ display: 'none' }}
+                  id="import-file"
+                  disabled={isImporting}
+                />
+                <label
+                  htmlFor="import-file"
+                  className="btn btn-secondary"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    minWidth: '120px'
+                    justifyContent: 'center',
+                    cursor: isImporting ? 'not-allowed' : 'pointer',
+                    opacity: isImporting ? 0.6 : 1
                   }}
                 >
-                  <Icon size={16} />
-                  {theme.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+                  <Upload size={20} />
+                  {isImporting ? 'Імпортування...' : 'Імпортувати дані'}
+                </label>
+              </div>
 
-        {/* Анімації */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            fontSize: '1rem',
-            fontWeight: '500',
-            color: 'var(--text-primary)',
-            cursor: 'pointer'
-          }}>
-            <input
-              type="checkbox"
-              checked={settings.showAnimations}
-              onChange={(e) => handleSettingChange('showAnimations', e.target.checked)}
-              style={{ transform: 'scale(1.2)' }}
-            />
-            Показувати анімації та переходи
-          </label>
-        </div>
-
-        {/* Компактний режим */}
-        <div>
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            fontSize: '1rem',
-            fontWeight: '500',
-            color: 'var(--text-primary)',
-            cursor: 'pointer'
-          }}>
-            <input
-              type="checkbox"
-              checked={settings.compactMode}
-              onChange={(e) => handleSettingChange('compactMode', e.target.checked)}
-              style={{ transform: 'scale(1.2)' }}
-            />
-            Компактний режим (менші відступи)
-          </label>
-        </div>
-      </div>
-
-      {/* Розділ Звук */}
-      <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
-        <h2 style={{
-          fontSize: '1.5rem',
-          fontWeight: '600',
-          marginBottom: '1.5rem',
-          color: 'var(--text-primary)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}>
-          <Volume2 size={24} />
-          Звукові ефекти
-        </h2>
-
-        <div>
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            fontSize: '1rem',
-            fontWeight: '500',
-            color: 'var(--text-primary)',
-            cursor: 'pointer'
-          }}>
-            <input
-              type="checkbox"
-              checked={settings.soundEnabled}
-              onChange={(e) => handleSettingChange('soundEnabled', e.target.checked)}
-              style={{ transform: 'scale(1.2)' }}
-            />
-            {settings.soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-            Увімкнути звукові ефекти
-          </label>
-        </div>
-      </div>
-
-      {/* Розділ Мова */}
-      <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
-        <h2 style={{
-          fontSize: '1.5rem',
-          fontWeight: '600',
-          marginBottom: '1.5rem',
-          color: 'var(--text-primary)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}>
-          <Globe size={24} />
-          Мова інтерфейсу
-        </h2>
-
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          {[
-            { value: 'uk', label: '🇺🇦 Українська' },
-            { value: 'en', label: '🇺🇸 English' },
-            { value: 'pl', label: '🇵🇱 Polski' }
-          ].map(lang => (
-            <button
-              key={lang.value}
-              className={settings.language === lang.value ? 'btn btn-primary' : 'btn btn-secondary'}
-              onClick={() => handleSettingChange('language', lang.value)}
-              style={{ minWidth: '140px' }}
-            >
-              {lang.label}
-            </button>
-          ))}
-        </div>
-        <p style={{
-          fontSize: '0.875rem',
-          color: 'var(--text-muted)',
-          marginTop: '0.75rem'
-        }}>
-          Наразі доступна лише українська мова. Інші мови будуть додані в майбутніх оновленнях.
-        </p>
-      </div>
-
-      {/* Розділ Автозбереження */}
-      <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
-        <h2 style={{
-          fontSize: '1.5rem',
-          fontWeight: '600',
-          marginBottom: '1.5rem',
-          color: 'var(--text-primary)'
-        }}>
-          💾 Автозбереження
-        </h2>
-
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            fontSize: '1rem',
-            fontWeight: '500',
-            color: 'var(--text-primary)',
-            cursor: 'pointer',
-            marginBottom: '1rem'
-          }}>
-            <input
-              type="checkbox"
-              checked={settings.autoSave}
-              onChange={(e) => handleSettingChange('autoSave', e.target.checked)}
-              style={{ transform: 'scale(1.2)' }}
-            />
-            Увімкнути автоматичне збереження
-          </label>
-
-          {settings.autoSave && (
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: 'var(--text-secondary)'
-              }}>
-                Інтервал збереження: {settings.autoSaveInterval} хв
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="30"
-                value={settings.autoSaveInterval}
-                onChange={(e) => handleSettingChange('autoSaveInterval', parseInt(e.target.value))}
+              {/* Скидання налаштувань */}
+              <button
+                className="btn btn-secondary"
+                onClick={handleResetSettings}
                 style={{
-                  width: '100%',
-                  maxWidth: '300px'
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  justifyContent: 'center'
                 }}
-              />
+              >
+                <RefreshCw size={20} />
+                Скинути налаштування
+              </button>
+
+              {/* Очищення всіх даних */}
+              <button
+                className="btn btn-danger"
+                onClick={handleClearAllData}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  justifyContent: 'center'
+                }}
+              >
+                
+                <Trash2 size={20} />
+                Очистити всі дані
+              </button>
             </div>
-          )}
-        
-        </div>
-      </div>
 
-      {/* Розділ База даних */}
-      <DatabaseSettings />
-
-      {/* Розділ Дані */}
-      <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
-        <h2 style={{
-          fontSize: '1.5rem',
-          fontWeight: '600',
-          marginBottom: '1.5rem',
-          color: 'var(--text-primary)'
-        
-        }}>
-          📁 Управління даними
-        </h2>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {/* Експорт */}
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowExportWizard(true)}
-            disabled={isExporting}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              justifyContent: 'center'
-            }}
-          >
-            <Package size={20} />
-            {isExporting ? 'Експортування...' : 'Розширений експорт'}
-          </button>
-
-          {/* Імпорт */}
-          <div>
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImportData}
-              style={{ display: 'none' }}
-              id="import-file"
-              disabled={isImporting}
-            />
-            <label
-              htmlFor="import-file"
-              className="btn btn-secondary"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                justifyContent: 'center',
-                cursor: isImporting ? 'not-allowed' : 'pointer',
-                opacity: isImporting ? 0.6 : 1
-              }}
-            >
-              <Upload size={20} />
-              {isImporting ? 'Імпортування...' : 'Імпортувати дані'}
-            </label>
+            <div style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              background: 'var(--bg-tertiary)',
+              borderRadius: 'var(--radius-md)',
+              fontSize: '0.875rem',
+              color: 'var(--text-muted)'
+            }}>
+              <strong>Примітка:</strong> Експорт включає всі світи, персонажів, лор, хронології, нотатки, зв'язки, карти та налаштування. 
+              Рекомендуємо регулярно створювати резервні копії ваших даних.
+            </div>
           </div>
 
-          {/* Скидання налаштувань */}
-          <button
-            className="btn btn-secondary"
-            onClick={handleResetSettings}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              justifyContent: 'center'
-            }}
-          >
-            <RefreshCw size={20} />
-            Ск
-            инути налаштування
-          </button>
-
-          {/* Очищення всіх даних */}
-          <button
-            className="btn btn-danger"
-            onClick={handleClearAllData}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              justifyContent: 'center'
-            }}
-          >
-            
-            <Trash2 size={20} />
-            Очистити всі дані
-          </button>
-        </div>
-
-        <div style={{
-          marginTop: '1rem',
-          padding: '1rem',
-          background: 'var(--bg-tertiary)',
-          borderRadius: 'var(--radius-md)',
-          fontSize: '0.875rem',
-          color: 'var(--text-muted)'
-        }}>
-          <strong>Примітка:</strong> Експорт включає всі світи, персонажів, лор, хронології, нотатки, зв'язки, карти та налаштування. 
-          Рекомендуємо регулярно створювати резервні копії ваших даних.
-        </div>
-      </div>
-
-      {/* Інформація про версію */}
-      <div className="card" style={{ padding: '1.5rem', textAlign: 'center' }}>
-        <h3 style={{
-          fontSize: '1.125rem',
-          fontWeight: '600',
-          marginBottom: '0.5rem',
-          color: 'var(--text-primary)'
-        }}>
-          Fantasy World Builder
-        </h3>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-          Версія 1.0.0 • Створено з ❤️ для фентезійних світів
-        </p>
-      </div>
+          {/* Інформація про версію */}
+          <div className="card" style={{ padding: '1.5rem', textAlign: 'center' }}>
+            <h3 style={{
+              fontSize: '1.125rem',
+              fontWeight: '600',
+              marginBottom: '0.5rem',
+              color: 'var(--text-primary)'
+            }}>
+              Fantasy World Builder
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+              Версія 1.0.0 • Створено з ❤️ для фентезійних світів
+            </p>
+          </div>
         </>
       )}
 
       {activeTab === 'database' && <DatabaseSettings />}
       {activeTab === 'plugins' && <PluginManager />}
       {activeTab === 'store' && <PluginStore />}
+      {activeTab === 'developer' && <PluginDeveloper />}
 
       {/* Експорт візард */}
       {showExportWizard && currentWorldId && (
