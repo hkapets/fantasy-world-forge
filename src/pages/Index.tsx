@@ -21,6 +21,7 @@ import { useAutoSave } from '@/hooks/useAutoSave';
 import { toast } from '@/components/ui/sonner';
 import { DataIntegrityChecker } from '@/components/Common/DataIntegrityChecker';
 import { OfflineIndicator } from '@/components/Common/OfflineIndicator';
+import { PluginManager } from '@/components/Settings/PluginManager';
 
 interface Character {
   id: string;
@@ -311,6 +312,12 @@ const Index = () => {
 
           {activeSection === 'settings' && (
             <Settings currentWorldId={currentWorldId} />
+          )}
+
+          {activeSection === 'plugins' && showSidebar && (
+            <div style={{ padding: '2rem' }}>
+              <PluginManager />
+            </div>
           )}
         </main>
       </div>

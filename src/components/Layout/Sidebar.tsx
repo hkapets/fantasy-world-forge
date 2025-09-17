@@ -5,7 +5,8 @@ import {
   Calendar, 
   Image as MapIcon, 
   Settings,
-  Edit
+  Edit,
+  Puzzle
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -24,6 +25,7 @@ const sections = [
   { id: 'relationships', name: "Зв'язки", icon: Edit },
   { id: 'notes', name: 'Нотатки', icon: Edit },
   { id: 'scenarios', name: 'Сценарії', icon: Edit },
+  { id: 'plugins', name: 'Плагіни', icon: Puzzle },
   { id: 'settings', name: 'Налаштування', icon: Settings }
 ];
 

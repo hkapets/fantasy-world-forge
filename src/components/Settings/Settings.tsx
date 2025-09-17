@@ -3,6 +3,8 @@ import { Moon, Sun, Volume2, VolumeX, Download, Upload, Trash2, RefreshCw, Globe
 import { DatabaseSettings } from './DatabaseSettings';
 import { ExportWizard } from '../Export/ExportWizard';
 import { useWorldsData } from '@/hooks/useLocalStorage';
+import { PluginManager } from './PluginManager';
+import { PluginStore } from './PluginStore';
 
 interface SettingsProps {
   currentWorldId: string | null;
@@ -33,6 +35,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [showExportWizard, setShowExportWizard] = useState(false);
+  const [activeTab, setActiveTab] = useState<'general' | 'database' | 'plugins' | 'store'>('general');
   const { getCurrentWorld } = useWorldsData();
 
   // Завантаження налаштувань з localStorage
@@ -199,6 +202,40 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
         </p>
       </div>
 
+      {/* Вкладки */}
+      <div style={{
+        display: 'flex',
+        gap: '0.5rem',
+        marginBottom: '2rem',
+        borderBottom: '1px solid var(--border-primary)'
+      }}>
+        {[
+          { id: 'general', label: 'Загальні', icon: '⚙️' },
+          { id: 'database', label: 'База даних', icon: '🗄️' },
+          { id: 'plugins', label: 'Плагіни', icon: '🧩' },
+          { id: 'store', label: 'Магазин', icon: '🏪' }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            className={activeTab === tab.id ? 'btn btn-primary' : 'btn btn-secondary'}
+            onClick={() => setActiveTab(tab.id as any)}
+            style={{
+              fontSize: '0.875rem',
+              padding: '0.75rem 1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            <span>{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Контент вкладок */}
+      {activeTab === 'general' && (
+        <>
       {/* Розділ Зовнішній вигляд */}
       <div className="card" style={{ marginBottom: '2rem', padding: '2rem' }}>
         <h2 style={{
@@ -550,6 +587,12 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
           Версія 1.0.0 • Створено з ❤️ для фентезійних світів
         </p>
       </div>
+        </>
+      )}
+
+      {activeTab === 'database' && <DatabaseSettings />}
+      {activeTab === 'plugins' && <PluginManager />}
+      {activeTab === 'store' && <PluginStore />}
 
       {/* Експорт візард */}
       {showExportWizard && currentWorldId && (
