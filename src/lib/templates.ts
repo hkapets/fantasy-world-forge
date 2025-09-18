@@ -1,5 +1,7 @@
 // Система шаблонів для швидкого створення
 
+import { useState, useEffect } from 'react';
+
 export interface Template {
   id: string;
   name: string;

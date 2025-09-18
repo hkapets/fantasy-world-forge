@@ -1,5 +1,6 @@
 // Система масових операцій для ефективного управління даними
 
+import { useState, useEffect } from 'react';
 import { db } from './database';
 import type { Character, LoreItem, Note, Relationship } from './database';
 

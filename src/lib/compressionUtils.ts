@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import LZString from 'lz-string';
 
 // Утіліти для стиснення даних
