@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Clock, Database, Zap } from 'lucide-react';
+import { Activity, Clock, Database, Zap, ChevronUp, ChevronDown, X } from 'lucide-react';
 
 interface PerformanceMetrics {
   renderTime: number;
@@ -16,6 +16,7 @@ export const PerformanceMonitor: React.FC = () => {
     lastUpdate: Date.now()
   });
   const [isVisible, setIsVisible] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     const updateMetrics = () => {
@@ -57,7 +58,11 @@ export const PerformanceMonitor: React.FC = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+        e.preventDefault();
         setIsVisible(!isVisible);
+        if (!isVisible) {
+          setIsCollapsed(false); // Розгортаємо при показі
+        }
       }
     };
 
@@ -96,74 +101,105 @@ export const PerformanceMonitor: React.FC = () => {
       background: 'var(--bg-primary)',
       border: '1px solid var(--border-primary)',
       borderRadius: 'var(--radius-md)',
-      padding: '0.75rem',
+      padding: isCollapsed ? '0.5rem' : '0.75rem',
       fontSize: '0.75rem',
       color: 'var(--text-secondary)',
       zIndex: 1000,
-      minWidth: '200px',
-      boxShadow: 'var(--shadow-card)'
+      minWidth: isCollapsed ? 'auto' : '200px',
+      boxShadow: 'var(--shadow-card)',
+      transition: 'all 0.2s ease'
     }}>
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: '0.5rem'
+        marginBottom: isCollapsed ? 0 : '0.5rem'
       }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.25rem',
+          gap: '0.5rem',
           fontWeight: '600',
           color: 'var(--text-primary)'
         }}>
           <Activity size={14} />
-          Продуктивність
+          {!isCollapsed && 'Продуктивність'}
         </div>
-        <button
-          onClick={() => setIsVisible(false)}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--text-muted)',
-            cursor: 'pointer',
-            fontSize: '0.75rem'
-          }}
-        >
-          ×
-        </button>
+        
+        <div style={{ display: 'flex', gap: '0.25rem' }}>
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              padding: '0.125rem',
+              borderRadius: 'var(--radius-sm)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            title={isCollapsed ? 'Розгорнути' : 'Згорнути'}
+          >
+            {isCollapsed ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+          
+          <button
+            onClick={() => setIsVisible(false)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              padding: '0.125rem',
+              borderRadius: 'var(--radius-sm)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            title="Закрити"
+          >
+            <X size={12} />
+          </button>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Clock size={12} />
-          <span>Рендер: {metrics.renderTime.toFixed(2)}мс</span>
-        </div>
+      {!isCollapsed && (
+        <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Clock size={12} />
+              <span>Рендер: {metrics.renderTime.toFixed(2)}мс</span>
+            </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Database size={12} />
-          <span style={{ color: getDataSizeColor() }}>
-            Дані: {metrics.dataSize.toFixed(1)}КБ
-          </span>
-        </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Database size={12} />
+              <span style={{ color: getDataSizeColor() }}>
+                Дані: {metrics.dataSize.toFixed(1)}КБ
+              </span>
+            </div>
 
-        {metrics.memoryUsage > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Zap size={12} />
-            <span style={{ color: getMemoryColor() }}>
-              Пам'ять: {metrics.memoryUsage.toFixed(1)}МБ
-            </span>
+            {metrics.memoryUsage > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Zap size={12} />
+                <span style={{ color: getMemoryColor() }}>
+                  Пам'ять: {metrics.memoryUsage.toFixed(1)}МБ
+                </span>
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      <div style={{
-        fontSize: '0.625rem',
-        color: 'var(--text-muted)',
-        marginTop: '0.5rem',
-        textAlign: 'center'
-      }}>
-        Ctrl+Shift+P для перемикання
-      </div>
+          <div style={{
+            fontSize: '0.625rem',
+            color: 'var(--text-muted)',
+            marginTop: '0.5rem',
+            textAlign: 'center'
+          }}>
+            Ctrl+Shift+P для перемикання
+          </div>
+        </>
+      )}
     </div>
   );
 };
