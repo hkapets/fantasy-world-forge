@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Магазин плагінів для Fantasy World Builder
 
 export interface PluginStoreItem {

@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Система плагінів для Fantasy World Builder
 
 export interface PluginManifest {

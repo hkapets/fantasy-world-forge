@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { PluginManager } from '@/lib/pluginSystem';
 
