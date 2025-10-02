@@ -6,6 +6,7 @@ import { BulkOperationsPanel } from '../Tools/BulkOperationsPanel';
 import { NameGeneratorModal } from '../Tools/NameGeneratorModal';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCharacterMapIntegration } from '@/hooks/useCharacterMapIntegration';
+import { useTranslation } from '@/lib/i18n';
 
 interface Character {
   id: string;
@@ -35,6 +36,7 @@ export const Characters: React.FC<CharactersProps> = ({
   onViewCharacter
 }) => {
   const { createAutoRelationships } = useTagsSystem(currentWorldId || '');
+  const { t } = useTranslation();
   const { autoCreateCharacterMarkers, syncCharacterMarkers } = useCharacterMapIntegration(currentWorldId || '');
   const [characters, setCharacters] = useLocalStorage<Character[]>('fantasyWorldBuilder_characters', []);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -149,7 +151,7 @@ export const Characters: React.FC<CharactersProps> = ({
         textAlign: 'center',
         color: 'var(--text-secondary)'
       }}>
-        Оберіть світ для роботи з персонажами
+        {t('messages.select_world_first', { section: t('sidebar.characters').toLowerCase() })}
       </div>
     );
   }
@@ -168,7 +170,7 @@ export const Characters: React.FC<CharactersProps> = ({
           fontWeight: '700',
           color: 'var(--text-primary)'
         }}>
-          Персонажі
+          {t('characters.title')}
         </h1>
         
         <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -193,7 +195,7 @@ export const Characters: React.FC<CharactersProps> = ({
             onClick={() => setIsCreateModalOpen(true)}
           >
             <Plus size={20} style={{ marginRight: '0.5rem' }} />
-            Створити персонажа
+            {t('characters.create_character')}
           </button>
         </div>
       </div>
@@ -225,7 +227,7 @@ export const Characters: React.FC<CharactersProps> = ({
           <input
             type="text"
             className="input"
-            placeholder="Пошук персонажів..."
+            placeholder={t('characters.search_placeholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{ paddingLeft: '3rem' }}
@@ -239,17 +241,17 @@ export const Characters: React.FC<CharactersProps> = ({
           onChange={(e) => setSortBy(e.target.value as any)}
           style={{ minWidth: '150px' }}
         >
-          <option value="name">За іменем</option>
-          <option value="race">За расою</option>
-          <option value="class">За класом</option>
-          <option value="created">За датою створення</option>
+          <option value="name">{t('characters.sort_by_name')}</option>
+          <option value="race">{t('characters.sort_by_race')}</option>
+          <option value="class">{t('characters.sort_by_class')}</option>
+          <option value="created">{t('characters.sort_by_created')}</option>
         </select>
 
         {/* Фільтрування */}
         <input
           type="text"
           className="input"
-          placeholder="Фільтр (раса, клас, статус)..."
+          placeholder={t('characters.filter_placeholder')}
           value={filterBy}
           onChange={(e) => setFilterBy(e.target.value)}
           style={{ minWidth: '200px' }}
@@ -270,9 +272,9 @@ export const Characters: React.FC<CharactersProps> = ({
                 marginBottom: '0.5rem',
                 color: 'var(--text-primary)'
               }}>
-                Персонажів не знайдено
+                {t('characters.characters_not_found')}
               </h3>
-              <p>Спробуйте змінити критерії пошуку або фільтрування</p>
+              <p>Try changing search or filter criteria</p>
             </div>
           ) : (
             <div>
@@ -281,9 +283,9 @@ export const Characters: React.FC<CharactersProps> = ({
                 marginBottom: '0.5rem',
                 color: 'var(--text-primary)'
               }}>
-                У цьому світі ще немає персонажів
+                {t('characters.no_characters')}
               </h3>
-              <p>Створіть першого персонажа для вашого фентезійного світу</p>
+              <p>Create the first character for your fantasy world</p>
             </div>
           )}
         </div>
@@ -295,7 +297,7 @@ export const Characters: React.FC<CharactersProps> = ({
             fontSize: '0.875rem',
             color: 'var(--text-secondary)'
           }}>
-            Знайдено персонажів: {worldCharacters.length}
+            Characters found: {worldCharacters.length}
           </div>
 
           {/* Грід з персонажами */}
