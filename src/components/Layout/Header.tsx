@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Volume2, VolumeX, Save, Download, Command, Package, Wand2 } from 'lucide-react';
+import { Search, Volume2, VolumeX, Save, Download, Command, Package, Wand as Wand2 } from 'lucide-react';
 import fantasyIcon from '@/assets/fantasy-icon.png';
 import { GlobalSearchModal } from './GlobalSearchModal';
 import { MusicPlayer } from './MusicPlayer';
