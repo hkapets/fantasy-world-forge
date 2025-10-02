@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from './Modal';
+import { useTranslation } from '@/lib/i18n';
 
 interface CreateWorldModalProps {
   isOpen: boolean;
@@ -13,11 +14,12 @@ export const CreateWorldModal: React.FC<CreateWorldModalProps> = ({
   onSave
 }) => {
   const [name, setName] = useState('');
+  const { t } = useTranslation();
   const [description, setDescription] = useState('');
 
   const handleSave = () => {
     if (!name.trim()) {
-      alert('Будь ласка, введіть назву світу');
+      alert(t('worlds.world_name') + ' is required');
       return;
     }
 
@@ -42,7 +44,7 @@ export const CreateWorldModal: React.FC<CreateWorldModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={handleCancel}
-      title="Створити новий світ"
+      title={t('worlds.create_world')}
       onSave={handleSave}
       onCancel={handleCancel}
     >
@@ -55,14 +57,14 @@ export const CreateWorldModal: React.FC<CreateWorldModalProps> = ({
             marginBottom: '0.5rem',
             color: 'var(--text-primary)'
           }}>
-            Назва світу *
+            {t('worlds.world_name')} *
           </label>
           <input
             type="text"
             className="input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Введіть назву вашого фентезійного світу..."
+            placeholder={t('worlds.world_name_placeholder')}
             maxLength={100}
           />
         </div>
@@ -75,13 +77,13 @@ export const CreateWorldModal: React.FC<CreateWorldModalProps> = ({
             marginBottom: '0.5rem',
             color: 'var(--text-primary)'
           }}>
-            Опис світу
+            {t('worlds.world_description')}
           </label>
           <textarea
             className="input"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Опишіть ваш світ: загальна атмосфера, ключові особливості, стиль..."
+            placeholder={t('worlds.world_description_placeholder')}
             rows={5}
             maxLength={500}
             style={{ 
@@ -95,7 +97,7 @@ export const CreateWorldModal: React.FC<CreateWorldModalProps> = ({
           fontSize: '0.75rem',
           color: 'var(--text-muted)'
         }}>
-          * - обов'язкові поля
+          * - required fields
         </div>
       </div>
     </Modal>

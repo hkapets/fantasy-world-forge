@@ -8,6 +8,7 @@ import { ExportWizard } from '../Export/ExportWizard';
 import { NameGeneratorModal } from '../Tools/NameGeneratorModal';
 import { useWorldsData } from '@/hooks/useLocalStorage';
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 
 interface HeaderProps {
   onSave: () => void;
@@ -23,6 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigate
 }) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const { t } = useTranslation();
   const [showExportWizard, setShowExportWizard] = useState(false);
   const [showNameGenerator, setShowNameGenerator] = useState(false);
   const { isEnabled, toggleEnabled, playEffect } = useSoundSystem();
@@ -121,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Search size={18} />
             <span style={{ flex: 1, textAlign: 'left' }}>
-              Пошук по всьому проекту...
+              {t('header.search_placeholder')}
             </span>
             <div style={{
               display: 'flex',
@@ -158,6 +160,7 @@ export const Header: React.FC<HeaderProps> = ({
               justifyContent: 'center'
             }}
             title="Генератор імен"
+            title={t('header.name_generator')}
           >
             <Wand2 size={20} />
           </button>
@@ -175,6 +178,7 @@ export const Header: React.FC<HeaderProps> = ({
               justifyContent: 'center'
             }}
             title={isEnabled ? 'Вимкнути звук' : 'Увімкнути звук'}
+            title={isEnabled ? t('header.sound_on') : t('header.sound_off')}
           >
             {isEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
           </button>
@@ -192,7 +196,7 @@ export const Header: React.FC<HeaderProps> = ({
             }}
           >
             <Save size={18} />
-            Зберегти
+            {t('common.save')}
           </button>
 
           <button
@@ -212,7 +216,7 @@ export const Header: React.FC<HeaderProps> = ({
             }}
           >
             <Package size={18} />
-            Експорт
+            {t('common.export')}
           </button>
         </div>
       </header>
@@ -230,6 +234,7 @@ export const Header: React.FC<HeaderProps> = ({
           onClose={() => setShowExportWizard(false)}
           worldId={currentWorldId}
           worldName={getCurrentWorld()?.name || 'Невідомий світ'}
+          worldName={getCurrentWorld()?.name || t('worlds.select_world')}
         />
       )}
 

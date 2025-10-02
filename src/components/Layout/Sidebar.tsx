@@ -8,6 +8,7 @@ import {
   Edit,
   Puzzle
 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 
 interface SidebarProps {
   activeSection: string;
@@ -36,6 +37,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   worlds,
   onWorldChange
 }) => {
+  const { t } = useTranslation();
+
   return (
     <aside className="sidebar">
       {/* Вибір світу */}
@@ -48,21 +51,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             marginBottom: '0.5rem',
             color: 'var(--text-secondary)'
           }}>
-            Поточний світ:
+            {t('sidebar.current_world')}
           </label>
           <select
             className="input"
             value={currentWorld || ''}
             onChange={(e) => onWorldChange(e.target.value)}
-            style={{ fontSize: '0.875rem' }}
-          >
-            {worlds.map(world => (
-              <option key={world.id} value={world.id}>
-                {world.name}
-              </option>
-            ))}
-          </select>
-        </div>
+    { id: 'characters', name: t('sidebar.characters'), icon: Users },
+    { id: 'lore', name: t('sidebar.lore'), icon: Book },
+    { id: 'chronology', name: t('sidebar.chronology'), icon: Calendar },
+    { id: 'maps', name: t('sidebar.maps'), icon: MapIcon },
+    { id: 'relationships', name: t('sidebar.relationships'), icon: Edit },
+    { id: 'notes', name: t('sidebar.notes'), icon: Edit },
+    { id: 'scenarios', name: t('sidebar.scenarios'), icon: Edit },
+    { id: 'plugins', name: t('sidebar.plugins'), icon: Puzzle },
+    { id: 'settings', name: t('sidebar.settings'), icon: Settings }
       )}
 
       {/* Навігація */}
@@ -76,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           padding: '0 1rem',
           marginBottom: '0.5rem'
         }}>
-          Розділи
+          {t('sidebar.sections')}
         </div>
         
         {sections.map(section => {

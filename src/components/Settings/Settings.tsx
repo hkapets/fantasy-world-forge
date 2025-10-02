@@ -6,6 +6,7 @@ import { useWorldsData } from '@/hooks/useLocalStorage';
 import { PluginManager } from './PluginManager';
 import { PluginStore } from './PluginStore';
 import { PluginDeveloper } from '../Tools/PluginDeveloper';
+import { useTranslation, LanguageSwitcher } from '@/lib/i18n';
 
 interface SettingsProps {
   currentWorldId: string | null;
@@ -33,6 +34,7 @@ const defaultSettings: AppSettings = {
 
 export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
+  const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [showExportWizard, setShowExportWizard] = useState(false);
@@ -196,10 +198,10 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
           marginBottom: '0.5rem',
           color: 'var(--text-primary)'
         }}>
-          ⚙️ Налаштування
+          ⚙️ {t('settings.title')}
         </h1>
         <p style={{ color: 'var(--text-secondary)' }}>
-          Персоналізуйте ваш досвід роботи з Fantasy World Builder
+          {t('settings.subtitle')}
         </p>
       </div>
 
@@ -212,11 +214,11 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
         overflowX: 'auto'
       }}>
         {[
-          { id: 'general', label: 'Загальні', icon: '⚙️' },
-          { id: 'database', label: 'База даних', icon: '🗄️' },
-          { id: 'plugins', label: 'Плагіни', icon: '🧩' },
-          { id: 'store', label: 'Магазин', icon: '🏪' },
-          { id: 'developer', label: 'Розробка', icon: '💻' }
+          { id: 'general', label: t('settings.general'), icon: '⚙️' },
+          { id: 'database', label: t('settings.database'), icon: '🗄️' },
+          { id: 'plugins', label: t('settings.plugins'), icon: '🧩' },
+          { id: 'store', label: t('settings.store'), icon: '🏪' },
+          { id: 'developer', label: t('settings.developer'), icon: '💻' }
         ].map(tab => (
           <button
             key={tab.id}
@@ -255,7 +257,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
               gap: '0.5rem'
             }}>
               <Palette size={24} />
-              Зовнішній вигляд
+              {t('settings.appearance')}
             </h2>
 
             {/* Тема */}
@@ -267,13 +269,13 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
                 marginBottom: '0.75rem',
                 color: 'var(--text-primary)'
               }}>
-                Тема інтерфейсу
+                {t('settings.theme')}
               </label>
               <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                 {[
-                  { value: 'dark', label: 'Темна', icon: Moon },
-                  { value: 'light', label: 'Світла', icon: Sun },
-                  { value: 'auto', label: 'Автоматично', icon: RefreshCw }
+                  { value: 'dark', label: t('settings.theme_dark'), icon: Moon },
+                  { value: 'light', label: t('settings.theme_light'), icon: Sun },
+                  { value: 'auto', label: t('settings.theme_auto'), icon: RefreshCw }
                 ].map(theme => {
                   const Icon = theme.icon;
                   return (
@@ -313,7 +315,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
                   onChange={(e) => handleSettingChange('showAnimations', e.target.checked)}
                   style={{ transform: 'scale(1.2)' }}
                 />
-                Показувати анімації та переходи
+                {t('settings.animations')}
               </label>
             </div>
 
@@ -334,7 +336,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
                   onChange={(e) => handleSettingChange('compactMode', e.target.checked)}
                   style={{ transform: 'scale(1.2)' }}
                 />
-                Компактний режим (менші відступи)
+                {t('settings.compact_mode')}
               </label>
             </div>
           </div>
@@ -351,7 +353,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
               gap: '0.5rem'
             }}>
               <Volume2 size={24} />
-              Звукові ефекти
+              {t('settings.sound_effects')}
             </h2>
 
             <div>
@@ -371,7 +373,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
                   style={{ transform: 'scale(1.2)' }}
                 />
                 {settings.soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-                Увімкнути звукові ефекти
+                {t('settings.enable_sound')}
               </label>
             </div>
           </div>
@@ -388,32 +390,10 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
               gap: '0.5rem'
             }}>
               <Globe size={24} />
-              Мова інтерфейсу
+              {t('settings.language')}
             </h2>
 
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-              {[
-                { value: 'uk', label: '🇺🇦 Українська' },
-                { value: 'en', label: '🇺🇸 English' },
-                { value: 'pl', label: '🇵🇱 Polski' }
-              ].map(lang => (
-                <button
-                  key={lang.value}
-                  className={settings.language === lang.value ? 'btn btn-primary' : 'btn btn-secondary'}
-                  onClick={() => handleSettingChange('language', lang.value)}
-                  style={{ minWidth: '140px' }}
-                >
-                  {lang.label}
-                </button>
-              ))}
-            </div>
-            <p style={{
-              fontSize: '0.875rem',
-              color: 'var(--text-muted)',
-              marginTop: '0.75rem'
-            }}>
-              Наразі доступна лише українська мова. Інші мови будуть додані в майбутніх оновленнях.
-            </p>
+            <LanguageSwitcher />
           </div>
 
           {/* Розділ Автозбереження */}
@@ -424,7 +404,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
               marginBottom: '1.5rem',
               color: 'var(--text-primary)'
             }}>
-              💾 Автозбереження
+              💾 {t('settings.autosave')}
             </h2>
 
             <div style={{ marginBottom: '1.5rem' }}>
@@ -444,7 +424,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
                   onChange={(e) => handleSettingChange('autoSave', e.target.checked)}
                   style={{ transform: 'scale(1.2)' }}
                 />
-                Увімкнути автоматичне збереження
+                {t('settings.enable_autosave')}
               </label>
 
               {settings.autoSave && (
@@ -456,7 +436,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
                     marginBottom: '0.5rem',
                     color: 'var(--text-secondary)'
                   }}>
-                    Інтервал збереження: {settings.autoSaveInterval} хв
+                    {t('settings.autosave_interval', { minutes: settings.autoSaveInterval.toString() })}
                   </label>
                   <input
                     type="range"
@@ -484,7 +464,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
               color: 'var(--text-primary)'
             
             }}>
-              📁 Управління даними
+              📁 {t('settings.data_management')}
             </h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -501,7 +481,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
                 }}
               >
                 <Package size={20} />
-                {isExporting ? 'Експортування...' : 'Розширений експорт'}
+                {isExporting ? 'Exporting...' : t('settings.advanced_export')}
               </button>
 
               {/* Імпорт */}
@@ -527,7 +507,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
                   }}
                 >
                   <Upload size={20} />
-                  {isImporting ? 'Імпортування...' : 'Імпортувати дані'}
+                  {isImporting ? 'Importing...' : t('settings.import_data')}
                 </label>
               </div>
 
@@ -543,7 +523,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
                 }}
               >
                 <RefreshCw size={20} />
-                Скинути налаштування
+                {t('settings.reset_settings')}
               </button>
 
               {/* Очищення всіх даних */}
@@ -559,7 +539,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
               >
                 
                 <Trash2 size={20} />
-                Очистити всі дані
+                {t('settings.clear_all_data')}
               </button>
             </div>
 
@@ -571,8 +551,8 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
               fontSize: '0.875rem',
               color: 'var(--text-muted)'
             }}>
-              <strong>Примітка:</strong> Експорт включає всі світи, персонажів, лор, хронології, нотатки, зв'язки, карти та налаштування. 
-              Рекомендуємо регулярно створювати резервні копії ваших даних.
+              <strong>Note:</strong> Export includes all worlds, characters, lore, chronologies, notes, relationships, maps and settings. 
+              We recommend regularly creating backups of your data.
             </div>
           </div>
 
@@ -584,10 +564,10 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
               marginBottom: '0.5rem',
               color: 'var(--text-primary)'
             }}>
-              Fantasy World Builder
+              {t('header.title')}
             </h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-              Версія 1.0.0 • Створено з ❤️ для фентезійних світів
+              {t('settings.version_info')}
             </p>
           </div>
         </>
@@ -605,6 +585,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
           onClose={() => setShowExportWizard(false)}
           worldId={currentWorldId}
           worldName={getCurrentWorld()?.name || 'Невідомий світ'}
+          worldName={getCurrentWorld()?.name || t('worlds.select_world')}
         />
       )}
     </div>

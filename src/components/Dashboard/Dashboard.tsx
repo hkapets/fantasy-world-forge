@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { SmartRecommendations } from './SmartRecommendations';
 import { QuickNavigation } from '../Common/QuickNavigation';
 import { BreadcrumbNavigation } from '../Common/BreadcrumbNavigation';
+import { useTranslation } from '@/lib/i18n';
 
 interface World {
   id: string;
@@ -29,6 +30,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onNavigate,
   onHomeClick
 }) => {
+  const { t } = useTranslation();
+
   if (worlds.length === 0) {
     return (
       <div style={{
@@ -63,7 +66,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text'
         }}>
-          Створити світ
+          {t('worlds.create_world')}
         </h2>
 
         <p style={{
@@ -73,9 +76,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           maxWidth: '600px',
           lineHeight: '1.6'
         }}>
-          Fantasy World Builder - це потужний інструмент для створення та управління фентезійними світами. 
-          Створюйте персонажів, будуйте історію, розробляйте магічні системи та керуйте складними 
-          взаємозв'язками у ваших світах.
+          {t('worlds.welcome_description')}
         </p>
 
         <button 
@@ -88,7 +89,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           }}
         >
           <Plus size={24} style={{ marginRight: '0.5rem' }} />
-          Створити перший світ
+          {t('worlds.create_first_world')}
         </button>
 
         <div style={{
@@ -105,7 +106,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             marginBottom: '1rem',
             color: 'var(--text-primary)'
           }}>
-            Можливості застосунку:
+           Application Features:
           </h3>
           <ul style={{
             listStyle: 'none',
@@ -115,14 +116,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
             textAlign: 'left'
           }}>
             {[
-              'Створення та управління персонажами',
-              'Розробка лору та міфології',
-              'Побудова хронології подій',
-              'Інтерактивні карти світу',
-              'Система зв\'язків між елементами',
-              'Створення сценаріїв та сюжетів',
-              'Офлайн робота та локальне збереження',
-              'Експорт даних у різних форматах'
+              'Character creation and management',
+              'Lore and mythology development',
+              'Event chronology building',
+              'Interactive world maps',
+              'Element relationship system',
+              'Scenario and plot creation',
+              'Offline work and local storage',
+              'Data export in various formats'
             ].map((feature, index) => (
               <li 
                 key={index}
@@ -155,7 +156,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       {/* Хлібні крихти */}
       <BreadcrumbNavigation
         items={[
-          { label: 'Мої світи', isActive: true }
+          { label: t('worlds.title'), isActive: true }
         ]}
         onHomeClick={onHomeClick}
       />
@@ -171,14 +172,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
           fontWeight: '700',
           color: 'var(--text-primary)'
         }}>
-          Мої світи
+          {t('worlds.title')}
         </h1>
         <button 
           className="btn btn-primary"
           onClick={onCreateWorld}
         >
           <Plus size={20} style={{ marginRight: '0.5rem' }} />
-          Створити світ
+          {t('worlds.create_world')}
         </button>
       </div>
 
@@ -223,8 +224,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
               fontSize: '0.75rem',
               color: 'var(--text-muted)'
             }}>
-              <div>Створено: {new Date(world.createdAt).toLocaleDateString('uk-UA')}</div>
-              <div>Змінено: {new Date(world.lastModified).toLocaleDateString('uk-UA')}</div>
+              <div>{t('worlds.created')}: {new Date(world.createdAt).toLocaleDateString()}</div>
+              <div>{t('worlds.modified')}: {new Date(world.lastModified).toLocaleDateString()}</div>
             </div>
           </div>
         ))}
