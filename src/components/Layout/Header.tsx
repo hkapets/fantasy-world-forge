@@ -159,7 +159,6 @@ export const Header: React.FC<HeaderProps> = ({
               alignItems: 'center',
               justifyContent: 'center'
             }}
-            title="Генератор імен"
             title={t('header.name_generator')}
           >
             <Wand2 size={20} />
@@ -177,7 +176,6 @@ export const Header: React.FC<HeaderProps> = ({
               alignItems: 'center',
               justifyContent: 'center'
             }}
-            title={isEnabled ? 'Вимкнути звук' : 'Увімкнути звук'}
             title={isEnabled ? t('header.sound_on') : t('header.sound_off')}
           >
             {isEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
@@ -233,7 +231,6 @@ export const Header: React.FC<HeaderProps> = ({
           isOpen={showExportWizard}
           onClose={() => setShowExportWizard(false)}
           worldId={currentWorldId}
-          worldName={getCurrentWorld()?.name || 'Невідомий світ'}
           worldName={getCurrentWorld()?.name || t('worlds.select_world')}
         />
       )}

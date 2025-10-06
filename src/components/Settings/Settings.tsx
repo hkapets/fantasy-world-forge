@@ -584,7 +584,6 @@ export const Settings: React.FC<SettingsProps> = ({ currentWorldId }) => {
           isOpen={showExportWizard}
           onClose={() => setShowExportWizard(false)}
           worldId={currentWorldId}
-          worldName={getCurrentWorld()?.name || 'Невідомий світ'}
           worldName={getCurrentWorld()?.name || t('worlds.select_world')}
         />
       )}
