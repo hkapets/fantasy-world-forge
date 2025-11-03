@@ -1,0 +1,28 @@
+{
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "devPath": "http://localhost:8080",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 900,
+        "resizable": true,
+        "title": "Fantasy World Builder",
+        "width": 1400,
+        "minHeight": 600,
+        "minWidth": 800
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "package": {
+    "productName": "Fantasy World Builder",
+    "version": "0.1.0"
+  }
+}

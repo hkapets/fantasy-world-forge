@@ -1,0 +1,35 @@
+appId: com.fantasyworldbuilder.app
+productName: Fantasy World Builder
+directories:
+  buildResources: public
+files:
+  - from: dist
+    to: app
+  - from: electron-main.js
+  - from: preload.js
+  - from: package.json
+
+win:
+  target:
+    - nsis
+    - portable
+  signingHashAlgorithms:
+    - sha256
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+
+mac:
+  target:
+    - dmg
+    - zip
+  category: public.app-category.productivity
+
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Utility
