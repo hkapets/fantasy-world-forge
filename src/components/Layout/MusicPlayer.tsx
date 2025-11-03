@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
 import { useSoundSystem } from '@/hooks/useSoundSystem';
 
@@ -19,6 +19,48 @@ export const MusicPlayer: React.FC = () => {
     setEffectsVolume,
     getCurrentTrack
   } = useSoundSystem();
+
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const audio = new Audio();
+    audioRef.current = audio;
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+    };
+  }, []);
+
+  useEffect(() => {
+    const currentTrackInfo = getCurrentTrack();
+    if (currentTrackInfo && audioRef.current) {
+      audioRef.current.src = currentTrackInfo.file;
+      if (isPlaying) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
+  }, [currentTrack, getCurrentTrack]);
+
+  const formatTime = (seconds: number) => {
+    if (!Number.isFinite(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const currentTrackInfo = getCurrentTrack();
 
@@ -146,15 +188,51 @@ export const MusicPlayer: React.FC = () => {
           color: 'var(--text-primary)',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap'
+          whiteSpace: 'nowrap',
+          marginBottom: '0.25rem'
         }}>
           {currentTrackInfo?.name || 'Невідомий трек'}
         </div>
+
+        {/* Прогресбар */}
         <div style={{
-          fontSize: '0.75rem',
-          color: 'var(--text-muted)'
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          marginBottom: '0.25rem'
         }}>
-          {currentTrack + 1} з {backgroundTracks.length}
+          <input
+            type="range"
+            min="0"
+            max={duration || 0}
+            value={currentTime}
+            onChange={(e) => {
+              if (audioRef.current) {
+                audioRef.current.currentTime = parseFloat(e.target.value);
+              }
+            }}
+            style={{
+              flex: 1,
+              height: '3px',
+              background: 'var(--bg-input)',
+              borderRadius: '2px',
+              outline: 'none',
+              cursor: 'pointer',
+              WebkitAppearance: 'none',
+              appearance: 'none'
+            }}
+          />
+        </div>
+
+        {/* Час */}
+        <div style={{
+          fontSize: '0.7rem',
+          color: 'var(--text-muted)',
+          display: 'flex',
+          justifyContent: 'space-between'
+        }}>
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
         </div>
       </div>
 
