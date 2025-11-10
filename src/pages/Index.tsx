@@ -1,18 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Header } from '@/components/Layout/Header';
 import { Sidebar } from '@/components/Layout/Sidebar';
-import { Dashboard } from '@/components/Dashboard/Dashboard';
+import { LoadingSpinner } from '@/components/Common/LoadingSpinner';
 import { CreateWorldModal } from '@/components/Modal/CreateWorldModal';
-import { Characters } from '@/components/Characters/Characters';
 import { CharacterView } from '@/components/Characters/CharacterView';
-import { Lore } from '@/components/Lore/Lore';
-import { Chronology } from '@/components/Chronology/Chronology';
-import { Notes } from '@/components/Notes/Notes';
-import { Maps } from '@/components/Maps/Maps';
-import { Relationships } from '@/components/Relationships/Relationships';
-import { Scenarios } from '@/components/Scenarios/Scenarios';
 import { useWorldsData } from '@/hooks/useLocalStorage';
-import { Settings } from '@/components/Settings/Settings';
 import { useSoundSystem } from '@/hooks/useSoundSystem';
 import { PerformanceMonitor } from '@/components/Common/PerformanceMonitor';
 import { DataValidator } from '@/components/Common/DataValidator';
@@ -21,7 +13,23 @@ import { useAutoSave } from '@/hooks/useAutoSave';
 import { toast } from '@/components/ui/sonner';
 import { DataIntegrityChecker } from '@/components/Common/DataIntegrityChecker';
 import { OfflineIndicator } from '@/components/Common/OfflineIndicator';
-import { PluginManager } from '@/components/Settings/PluginManager';
+
+const LazyLoadFallback = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+    <LoadingSpinner />
+  </div>
+);
+
+const Dashboard = lazy(() => import('@/components/Dashboard/Dashboard').then(m => ({ default: m.Dashboard })));
+const Characters = lazy(() => import('@/components/Characters/Characters').then(m => ({ default: m.Characters })));
+const Lore = lazy(() => import('@/components/Lore/Lore').then(m => ({ default: m.Lore })));
+const Chronology = lazy(() => import('@/components/Chronology/Chronology').then(m => ({ default: m.Chronology })));
+const Notes = lazy(() => import('@/components/Notes/Notes').then(m => ({ default: m.Notes })));
+const Maps = lazy(() => import('@/components/Maps/Maps').then(m => ({ default: m.Maps })));
+const Relationships = lazy(() => import('@/components/Relationships/Relationships').then(m => ({ default: m.Relationships })));
+const Scenarios = lazy(() => import('@/components/Scenarios/Scenarios').then(m => ({ default: m.Scenarios })));
+const Settings = lazy(() => import('@/components/Settings/Settings').then(m => ({ default: m.Settings })));
+const PluginManager = lazy(() => import('@/components/Settings/PluginManager').then(m => ({ default: m.PluginManager })));
 
 interface Character {
   id: string;
@@ -249,20 +257,22 @@ const Index = () => {
           />
         )}
 
-        <main style={{ 
-          flex: 1, 
+        <main style={{
+          flex: 1,
           overflow: 'auto',
           background: 'var(--bg-primary)'
         }}>
           {activeSection === 'dashboard' && (
-            <Dashboard
-              worlds={worlds}
-              onCreateWorld={handleCreateWorld}
-              onSelectWorld={handleSelectWorld}
-              selectedWorld={currentWorldId}
-              onNavigate={handleNavigate}
-              onHomeClick={handleHomeClick}
-            />
+            <Suspense fallback={<LazyLoadFallback />}>
+              <Dashboard
+                worlds={worlds}
+                onCreateWorld={handleCreateWorld}
+                onSelectWorld={handleSelectWorld}
+                selectedWorld={currentWorldId}
+                onNavigate={handleNavigate}
+                onHomeClick={handleHomeClick}
+              />
+            </Suspense>
           )}
 
           {activeSection === 'characters' && showSidebar && (
@@ -275,49 +285,63 @@ const Index = () => {
                 onSave={handleSaveCharacter}
               />
             ) : (
-              <Characters
-                currentWorldId={currentWorldId}
-                onViewCharacter={handleViewCharacter}
-              />
+              <Suspense fallback={<LazyLoadFallback />}>
+                <Characters
+                  currentWorldId={currentWorldId}
+                  onViewCharacter={handleViewCharacter}
+                />
+              </Suspense>
             )
           )}
 
           {activeSection === 'lore' && showSidebar && (
-            <Lore currentWorldId={currentWorldId} />
+            <Suspense fallback={<LazyLoadFallback />}>
+              <Lore currentWorldId={currentWorldId} />
+            </Suspense>
           )}
 
           {activeSection === 'chronology' && showSidebar && (
-            <Chronology currentWorldId={currentWorldId} />
+            <Suspense fallback={<LazyLoadFallback />}>
+              <Chronology currentWorldId={currentWorldId} />
+            </Suspense>
           )}
 
           {activeSection === 'notes' && showSidebar && (
-            <Notes currentWorldId={currentWorldId} />
+            <Suspense fallback={<LazyLoadFallback />}>
+              <Notes currentWorldId={currentWorldId} />
+            </Suspense>
           )}
 
           {activeSection === 'maps' && showSidebar && (
-            <Maps currentWorldId={currentWorldId} />
+            <Suspense fallback={<LazyLoadFallback />}>
+              <Maps currentWorldId={currentWorldId} />
+            </Suspense>
           )}
 
           {activeSection === 'relationships' && showSidebar && (
-            <Relationships currentWorldId={currentWorldId} />
-          )}
-
-          {activeSection === 'relationships' && showSidebar && (
-            <Relationships currentWorldId={currentWorldId} />
+            <Suspense fallback={<LazyLoadFallback />}>
+              <Relationships currentWorldId={currentWorldId} />
+            </Suspense>
           )}
 
           {activeSection === 'scenarios' && showSidebar && (
-            <Scenarios currentWorldId={currentWorldId} />
+            <Suspense fallback={<LazyLoadFallback />}>
+              <Scenarios currentWorldId={currentWorldId} />
+            </Suspense>
           )}
 
           {activeSection === 'settings' && (
-            <Settings currentWorldId={currentWorldId} />
+            <Suspense fallback={<LazyLoadFallback />}>
+              <Settings currentWorldId={currentWorldId} />
+            </Suspense>
           )}
 
           {activeSection === 'plugins' && showSidebar && (
-            <div style={{ padding: '2rem' }}>
-              <PluginManager />
-            </div>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <div style={{ padding: '2rem' }}>
+                <PluginManager />
+              </div>
+            </Suspense>
           )}
         </main>
       </div>
