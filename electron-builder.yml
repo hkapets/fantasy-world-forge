@@ -9,6 +9,11 @@ files:
   - from: preload.js
   - from: package.json
 
+publish:
+  provider: github
+  owner: YOUR_GITHUB_USERNAME
+  repo: YOUR_REPO_NAME
+
 win:
   target:
     - nsis
